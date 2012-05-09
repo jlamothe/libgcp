@@ -105,7 +105,9 @@ int gcp_init(GCPConn *c)
         return 1;
     c->in_buf = NULL;
     c->inbuf_size = 0;
+    c->data_size = 0;
     c->bytes_read = 0;
+    c->crc = 0;
     c->state = GCPConn::preamble1;
     c->data_avail = 0;
     return 0;
@@ -134,10 +136,10 @@ int gcp_read_byte(GCPConn *c, uint8_t b)
         read_data(c, b);
         break;
     case GCPConn::crc1:
-        read_crc1;
+        read_crc1(c, b);
         break;
     case GCPConn::crc2:
-        read_crc2;
+        read_crc2(c, b);
         break;
     }
     return 0;
