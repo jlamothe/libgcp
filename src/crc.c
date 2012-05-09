@@ -28,19 +28,29 @@ http://www.gnu.org/licenses/
 #include <stdlib.h>
 
 /*
+ * DEFINES
+ */
+
+#define CRC16 0x18005
+
+/*
  * FUNCTION DEFINITIONS
  */
 
-uint16_t gen_crc(const uint8_t *data)
+uint16_t gen_crc(const uint8_t *data, uint16_t size)
 {
-    return 0;                   /* TODO: implement this */
+    uint32_t out = 0;
+    int bits_read;
+    return out;                 /* TODO: implement this */
 }
 
-int check_crc(const uint8_t *data, uint16_t crc)
+
+
+int check_crc(const uint8_t *data, uint16_t size, uint16_t crc)
 {
     if(data == NULL)
         return -1;
-    return (crc == gen_crc(data)) ? 0 : 1;
+    return (crc == gen_crc(data, size)) ? 0 : 1;
 }
 
 /* jl */

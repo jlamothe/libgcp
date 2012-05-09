@@ -42,20 +42,24 @@ http://www.gnu.org/licenses/
 
    \param data The data being used to generate the checksum.
 
+   \param size The size (in bytes) of the data being CRC'd.
+
    \return The generated CRC code.
  */
-uint16_t gen_crc(const uint8_t *data);
+uint16_t gen_crc(const uint8_t *data, uint16_t size);
 
 /**
    \brief Validates a CRC code for a block of data.
 
    \param data The data being checked.
 
+   \param size The size (in bytes) of the data being checked.
+
    \param crc The CRC being checked.
 
    \return 0 if the CRC code is valid, a non-zero value otherwise.
  */
-int check_crc(const uint8_t *data, uint16_t crc);
+int check_crc(const uint8_t *data, uint16_t size, uint16_t crc);
 
 #ifdef __cplusplus
 }

@@ -197,7 +197,7 @@ void read_crc1(GCPConn *c, uint8_t b)
 void read_crc2(GCPConn *c, uint8_t b)
 {
     c->crc |= b;
-    if(check_crc(c->in_buf, c->crc))
+    if(check_crc(c->in_buf, c->in_buf->data_size, c->crc))
         data_avail = 1;
     c->state = GCPConn::preamble1;
 }
