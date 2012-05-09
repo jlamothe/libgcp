@@ -24,31 +24,18 @@ http://www.gnu.org/licenses/
  * INCLUDES
  */
 
-#include "crc.h"
+#include "crc16.h"
 #include <stdlib.h>
 
 /*
  * DEFINES
  */
 
-#define CRC16 0x18005
+#define CRC16 0x8005
 
 /*
  * FUNCTION PROTOTYPES
  */
-
-/**
-   \brief Determines if a one 16-bit value is greater than or equal to
-   another (according to CRC arithmetic).
-
-   \param a The lvalue.
-
-   \param b The rvalue.
-
-   \return a non-zero value if a is greater than or equal to b, 0 if b
-   is greater than a.
- */
-static int crc_ge(uint16_t a, uint16_t b);
 
 /**
    \brief Counts the minimum number of bits to represent a value.
@@ -65,8 +52,8 @@ static int count_bits(uint16_t n)
 
 uint16_t gen_crc(const uint8_t *data, uint16_t size)
 {
-    uint32_t out = 0;
-    int bits_read = 0;
+    uint16_t out = 1;
+    int bits_read = 0, bit_flag;
 
     /* Sanity check: */
     if(data == NULL)
@@ -74,6 +61,7 @@ uint16_t gen_crc(const uint8_t *data, uint16_t size)
 
     while(size > 0)
     {
+        bit_flag = out >> 15;
 
         /* Get next bit: */
         out <<= 1;
@@ -87,7 +75,7 @@ uint16_t gen_crc(const uint8_t *data, uint16_t size)
         }
 
         /* Cycle check: */
-        if(crc_ge(out, CRC16))
+        if(bit_flag)
             out = out ^ CRC16;
 
     }

@@ -20,8 +20,8 @@ License along with this program.  If not, see:
 http://www.gnu.org/licenses/
 */
 
-#ifndef CRC_H
-#define CRC_H
+#ifndef CRC16_H
+#define CRC16_H
 
 /*
  * INCLUDES
@@ -65,6 +65,6 @@ int check_crc(const uint8_t *data, uint16_t size, uint16_t crc);
 }
 #endif
 
-#endif  /* CRC_H */
+#endif  /* CRC16_H */
 
 /* jl */

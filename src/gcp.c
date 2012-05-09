@@ -26,7 +26,7 @@ http://www.gnu.org/licenses/
 
 #include "gcp.h"
 #include <stdlib.h>
-#include "crc.h"
+#include "crc16.h"
 
 /*
  * FUNCTION PROTOTYPES
