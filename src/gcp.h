@@ -23,6 +23,12 @@ http://www.gnu.org/licenses/
 #ifndef GCP_H
 #define GCP_H
 
+/*
+ * INCLUDES
+ */
+
+#include<stdint.h>
+
 #ifdef _cplusplus
 extern "C" {
 #endif
@@ -33,14 +39,15 @@ extern "C" {
     typedef struct
     {
         /** \brief Input buffer. */
-        unsigned char *in_buf;
-
+        uint8_t *in_buf;
         /** \brief Input buffer size. */
-        unsigned long inbuf_size;
-
+        uint16_t inbuf_size;
+        /** \brief Size of the data in the input buffer. */
+        uint16_t data_size;
         /** \brief Bytes read (not including packet overhead). */
-        unsigned long bytes_read;
-
+        uint16_t bytes_read;
+        /** \brief The crc checksum. */
+        uint16_t crc;
         /** \brief Input state. */
         enum {
             /** \brief Reading first byte of the preamble. */
@@ -52,31 +59,29 @@ extern "C" {
             /** \brief Reading second byte of the payload size. */
             size2,
             /** \brief Reading payload data. */
-            data,
+            read_data,
             /** \brief Reading first byte of the checksum. */
             crc1,
             /** \brief Reading second byte of the checksum. */
             crc2,
         } state;
-
         /** \brief Indicates that the data from an input frame is
             available for reading. */
         unsigned data_avail : 1;
-
-    } GCPConnection;
+    } GCPConn;
 
     /*
      * FUNCTION PROTOTYPES
      */
 
     /**
-       \brief Initializes a GCPConnection object.
+       \brief Initializes a GCPConn object.
 
        \param A pointer to the object to be initialized.
 
        \return 0 on success; a non-zero value on failure.
      */
-    int gcp_init(GCPConnection *c);
+    int gcp_init(GCPConn *c);
 
     /**
        \brief Processes a byte from the stream.
@@ -87,7 +92,7 @@ extern "C" {
 
        \return 0 on success; a non-zero value on failure.
      */
-    int gcp_read_byte(GCPConnection *c, unsigned char b);
+    int gcp_read_byte(GCPConn *c, uint8_t b);
 
 #ifdef __cplusplus
 }
