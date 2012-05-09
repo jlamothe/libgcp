@@ -26,6 +26,7 @@ http://www.gnu.org/licenses/
 
 #include "gcp.h"
 #include <stdlib.h>
+#include "crc.h"
 
 /*
  * FUNCTION PROTOTYPES
@@ -194,8 +195,9 @@ void read_crc1(GCPConn *c, uint8_t b)
 void read_crc2(GCPConn *c, uint8_t b)
 {
     c->crc |= b;
-    if(1)                       /* TODO: add CRC check */
+    if(check_crc(c->in_buf, c->crc))
         data_avail = 1;
+    c->state = GCPConn::preamble1;
 }
 
 /* jl */
