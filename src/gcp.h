@@ -38,36 +38,79 @@ extern "C" {
      */
     typedef struct
     {
-        /** \brief Input buffer. */
-        uint8_t *in_buf;
-        /** \brief Input buffer size. */
-        uint16_t inbuf_size;
-        /** \brief Size of the data in the input buffer. */
+
+        /** \brief Receive buffer. */
+        uint8_t *recv_buf;
+
+        /** \brief Send buffer. */
+        uint8_t *send_buf;
+
+        /** \brief Receive buffer size. */
+        uint16_t recv_size;
+
+        /**
+           \brief Send buffer size.
+
+           \note This is the size of the data in the send buffer, not
+           the size of the buffer itself.
+         */
+        uint16_t send_size;
+
+        /** \brief Size of the data in the receive buffer. */
         uint16_t data_size;
-        /** \brief Bytes read (not including packet overhead). */
-        uint16_t bytes_read;
-        /** \brief The crc checksum. */
-        uint16_t crc;
-        /** \brief Input state. */
-        enum {
+
+        /** \brief Number of payload bytes received. */
+        uint16_t bytes_rcvd;
+
+        /** \brief Number of payload bytes sent. */
+        uint16_t bytes_sent;
+
+        /** \brief The crc checksum of the received data. */
+        uint16_t crc_recv;
+
+        /** \brief The crc checksum of the data being sent. */
+        uint16_t crc_send;
+
+        /** \brief Communication state. */
+        typedef enum {
+
             /** \brief Reading first byte of the preamble. */
             preamble1,
+
             /** \brief Reading second byte of the preamble. */
             preamble2,
+
             /** \brief Reading first byte of the payload size. */
             size1,
+
             /** \brief Reading second byte of the payload size. */
             size2,
+
             /** \brief Reading payload data. */
-            read_data,
+            payload,
+
             /** \brief Reading first byte of the checksum. */
             crc1,
+
             /** \brief Reading second byte of the checksum. */
             crc2,
-        } state;
-        /** \brief Indicates that the data from an input frame is
-            available for reading. */
-        unsigned data_avail : 1;
+
+        } FrameState;
+
+        /** \brief The receive state. */
+        FrameState recv_state;
+
+        /** \brief The send state. */
+        FrameState send_state;
+
+        /** \brief When true, indicates that the receive buffer is
+            being written to and should not be read from. */
+        unsigned recv_lock : 1;
+
+        /** \brief When true, indicates that the receive buffer is
+            being read from and should not be written to. */
+        unsigned send_lock : 1;
+
     } GCPConn;
 
     /*
@@ -88,11 +131,20 @@ extern "C" {
 
        \param c A pointer to the connection.
 
-       \param b The byte to be processed.
+       \param b The byte from the stream to be processed.
 
        \return 0 on success; a non-zero value on failure.
      */
-    int gcp_read_byte(GCPConn *c, uint8_t b);
+    int gcp_recv_byte(GCPConn *c, uint8_t b);
+
+    /**
+       \brief Calculates the next byte to be sent to the stream.
+
+       \param c A pointer to the connection.
+
+       \return The next byte (or 0 on failure).
+     */
+    uint8_t gcp_send_byte(GCPConn *c);
 
 #ifdef __cplusplus
 }

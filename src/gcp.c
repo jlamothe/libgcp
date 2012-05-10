@@ -39,7 +39,7 @@ http://www.gnu.org/licenses/
 
    \param b The byte being read.
  */
-static void read_preamble1(GCPConn *c, uint8_t b);
+static void recv_preamble1(GCPConn *c, uint8_t b);
 
 /**
    \brief Reads the second byte of the preamble.
@@ -48,7 +48,7 @@ static void read_preamble1(GCPConn *c, uint8_t b);
 
    \param b The byte being read.
  */
-static void read_preamble2(GCPConn *c, uint8_t b);
+static void recv_preamble2(GCPConn *c, uint8_t b);
 
 /**
    \brief Reads the first byte of the data size.
@@ -57,7 +57,7 @@ static void read_preamble2(GCPConn *c, uint8_t b);
 
    \param b The byte being read.
  */
-static void read_size1(GCPConn *c, uint8_t b);
+static void recv_size1(GCPConn *c, uint8_t b);
 
 /**
    \brief Reads the second byte of the data size.
@@ -66,7 +66,7 @@ static void read_size1(GCPConn *c, uint8_t b);
 
    \param b The byte being read.
  */
-static void read_size2(GCPConn *c, uint8_t b);
+static void recv_size2(GCPConn *c, uint8_t b);
 
 /**
    \brief Reads the payload data.
@@ -75,7 +75,7 @@ static void read_size2(GCPConn *c, uint8_t b);
 
    \param b The byte being read.
  */
-static void read_data(GCPConn *c, uint8_t b);
+static void recv_payload(GCPConn *c, uint8_t b);
 
 /**
    \brief Reads the first byte of the checksum.
@@ -84,7 +84,7 @@ static void read_data(GCPConn *c, uint8_t b);
 
    \param b The byte being read.
  */
-static void read_crc1(GCPConn *c, uint8_t b);
+static void recv_crc1(GCPConn *c, uint8_t b);
 
 /**
    \brief Reads the second byte of the checksum.
@@ -93,7 +93,70 @@ static void read_crc1(GCPConn *c, uint8_t b);
 
    \param b The byte being read.
  */
-static void read_crc2(GCPConn *c, uint8_t b);
+static void recv_crc2(GCPConn *c, uint8_t b);
+
+/**
+   \brief Returns the first byte of the preamble to be sent.
+
+   \param c A pointer to the GCPConn object.
+
+   \return The first byte of the preamble.
+ */
+static uint8_t send_preamble1(GCPConn *c);
+
+/**
+   \brief Returns the second byte of the preamble to be sent.
+
+   \param c A pointer to the GCPConn object.
+
+   \return The second byte of the preamble.
+ */
+static uint8_t send_preamble2(GCPConn *c);
+
+/**
+   \brief Returns the first byte of the payload size to be sent.
+
+   \param c A pointer to the GCPConn object.
+
+   \return The first byte of the payload size.
+ */
+static uint8_t send_size1(GCPConn *c);
+
+/**
+   \brief Returns the second byte of the payload size to be sent.
+
+   \param c A pointer to the GCPConn object.
+
+   \return The second byte of the payload size.
+ */
+static uint8_t send_size2(GCPConn *c);
+
+/**
+   \brief Returns the next byte of the payload to be sent.
+
+   \param c A pointer to the GCPConn object.
+
+   \return The next byte of the payload.
+ */
+static uint8_t send_payload(GCPConn *c);
+
+/**
+   \brief Returns the first byte of the checksum to be sent.
+
+   \param c A pointer to the GCPConn object.
+
+   \return The first byte of the checksum.
+ */
+static uint8_t send_crc1(GCPConn *c);
+
+/**
+   \brief Returns the second byte of the checksum to be sent.
+
+   \param c A pointer to the GCPConn object.
+
+   \return The second byte of the checksum.
+ */
+static uint8_t send_crc2(GCPConn *c);
 
 /*
  * FUNCTION DEFINITIONS
@@ -103,103 +166,188 @@ int gcp_init(GCPConn *c)
 {
     if(c == NULL)
         return 1;
-    c->in_buf = NULL;
-    c->inbuf_size = 0;
+    c->recv_buf = NULL;
+    c->send_buf = NULL;
+    c->recv_size = 0;
+    c->send_size = 0;
     c->data_size = 0;
-    c->bytes_read = 0;
-    c->crc = 0;
-    c->state = GCPConn::preamble1;
-    c->data_avail = 0;
+    c->bytes_rcvd = 0;
+    c->bytes_sent = 0;
+    c->crc_recv = 0;
+    c->crc_send = 0;
+    c->recv_state = GCPConn::preamble1;
+    c->send_state = GCPConn::preamble1;
+    c->recv_lock = 1;
+    c->send_lock = 0;
     return 0;
 }
 
-int gcp_read_byte(GCPConn *c, uint8_t b)
+int gcp_recv_byte(GCPConn *c, uint8_t b)
 {
     if(c == NULL)
         return 1;
-    c->data_avail = 0;
-    switch(c->state)
+    c->recv_lock = 1;
+    switch(c->recv_state)
     {
     case GCPConn::preamble1:
-        read_preamble1(c, b);
+        recv_preamble1(c, b);
         break;
     case GCPConn::preamble2:
-        read_preamble2(c, b);
+        recv_preamble2(c, b);
         break;
     case GCPConn::size1:
-        read_size1(c, b);
+        recv_size1(c, b);
         break;
     case GCPConn::size2:
-        read_size2(c, b);
+        recv_size2(c, b);
         break;
     case GCPConn::read_data:
-        read_data(c, b);
+        recv_payload(c, b);
         break;
     case GCPConn::crc1:
-        read_crc1(c, b);
+        recv_crc1(c, b);
         break;
     case GCPConn::crc2:
-        read_crc2(c, b);
+        recv_crc2(c, b);
         break;
     }
     return 0;
 }
 
-void read_preamble1(GCPConn *c, uint8_t b)
+void recv_preamble1(GCPConn *c, uint8_t b)
 {
     if(b == 0x17)
-        c->state = GCPConn::preamble2;
+        c->recv_state = GCPConn::preamble2;
 }
 
-void read_preamble2(GCPConn *c, uint8_t b)
+void recv_preamble2(GCPConn *c, uint8_t b)
 {
     if(b == 0x01)
-        c->state = GCPConn::size1;
+        c->recv_state = GCPConn::size1;
     else
-        c->state = GCPConn::preamble1;
+        c->recv_state = GCPConn::preamble1;
 }
 
-void read_size1(GCPConn *c, uint8_t b)
+void recv_size1(GCPConn *c, uint8_t b)
 {
     c->data_size = b;
     c->data_size <<= 8;
-    c->state = read_size2;
+    c->recv_state = read_size2;
 }
 
-void read_size2(GCPConn *c, uint8_t b)
+void recv_size2(GCPConn *c, uint8_t b)
 {
     c->data_size |= b;
     if(c->data_size == 0)
-        c->state = GCPConn::crc1;
+        c->recv_state = GCPConn::crc1;
     else
     {
-        c->state = GCPConn::read_data;
-        c->bytes_read = 0;
+        c->recv_state = GCPConn::read_data;
+        c->bytes_rcvd = 0;
     }
 }
 
-void read_data(GCPConn *c, uint8_t b)
+void recv_payload(GCPConn *c, uint8_t b)
 {
-    if(c->in_buf != NULL && c->inbuf_size > c->bytes_read)
-        in_buf[c->bytes_read] = b;
-    c->bytes_read++;
-    if(c->bytes_read >= c->data_size)
-        c->state = GCPConn::crc1;
+    if(c->recv_buf != NULL && c->recv_size > c->bytes_rcvd)
+        in_buf[c->bytes_rcvd] = b;
+    c->bytes_rcvd++;
+    if(c->bytes_rcvd >= c->data_size)
+        c->recv_state = GCPConn::crc1;
 }
 
-void read_crc1(GCPConn *c, uint8_t b)
+void recv_crc1(GCPConn *c, uint8_t b)
 {
-    c->crc = b;
-    c->crc <<= 8;
-    c->state = GCPConn::crc2;
+    c->recv_crc = b;
+    c->recv_crc <<= 8;
+    c->recv_state = GCPConn::crc2;
 }
 
-void read_crc2(GCPConn *c, uint8_t b)
+void recv_crc2(GCPConn *c, uint8_t b)
 {
-    c->crc |= b;
-    if(check_crc(c->in_buf, c->in_buf->data_size, c->crc))
-        data_avail = 1;
-    c->state = GCPConn::preamble1;
+    c->recv_crc |= b;
+    if(check_crc(c->recv_buf, c->recv_buf->data_size, c->recv_crc))
+        c->recv_lock = 0;
+    c->recv_state = GCPConn::preamble1;
+}
+
+uint8_t gcp_send_byte(GCPConn *c)
+{
+    if(c == NULL)
+        return 0;
+    c->send_lock = 1;
+    switch(c->send_state)
+    {
+    case GCPComm::preamble1:
+        return send_preamble1(GCPComm *c);
+    case GCPComm::preamble2:
+        return send_preamble2(GCPComm *c);
+    case GCPComm::size1:
+        return send_preamble1(GCPComm *c);
+    case GCPComm::size2:
+        return send_preamble1(GCPComm *c);
+    case GCPComm::payload:
+        return send_payload(GCPComm *c);
+    case GCPComm::crc1:
+        return send_crc1(GCPComm *c);
+    case GCPComm::crc2:
+        return send_crc2(GCPComm *c);
+    }
+    return 0;
+}
+
+uint8_t send_preamble1(GCPComm *c)
+{
+    c->send_state = GCPComm::send_preamble2;
+    return 0x17;
+}
+
+uint8_t send_preamble1(GCPComm *c)
+{
+    c->send_state = GCPComm::send_size1;
+    return 0x01;
+}
+
+uint8_t send_size1(GCPComm *c)
+{
+    c->send_state = GCPComm::send_size2;
+    return c->send_size >> 8;
+}
+
+uint8_t send_size1(GCPComm *c)
+{
+    if(c->send_size == 0)
+        c->send_state = GCPComm::crc1;
+    else
+    {
+        c->send_state = GCPComm::payload;
+        c->bytes_sent = 0;
+    }
+    return c->send_size;
+}
+
+uint8_t send_payload(GCPComm *c)
+{
+    c->bytes_sent++;
+    if(c->bytes_sent >= send_size)
+        c->send_state = GCPComm::crc1;
+    if(c->send_buf == NULL)
+        return 0;
+    return c->send_buf[c->bytes_sent - 1];
+}
+
+uint8_t send_crc1(GCPComm *c);
+{
+    c->crc_send = gen_crc(c->send_buf, c->send_size);
+    c->send_state = GCPComm::crc2;
+    return c->crc_send >> 8;
+}
+
+uint8_t send_crc1(GCPComm *c);
+{
+    c->send_state = GCPComm::preamble;
+    c->send_lock = 0;
+    return c->crc_send;
 }
 
 /* jl */
