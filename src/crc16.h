@@ -46,7 +46,7 @@ http://www.gnu.org/licenses/
 
    \return The generated CRC code.
  */
-uint16_t gen_crc(const uint8_t *data, uint16_t size);
+uint16_t gen_crc16(const uint8_t *data, uint16_t size);
 
 /**
    \brief Validates a CRC code for a block of data.
@@ -59,7 +59,7 @@ uint16_t gen_crc(const uint8_t *data, uint16_t size);
 
    \return 0 if the CRC code is valid, a non-zero value otherwise.
  */
-int check_crc(const uint8_t *data, uint16_t size, uint16_t crc);
+int check_crc16(const uint8_t *data, uint16_t size, uint16_t crc);
 
 #ifdef __cplusplus
 }

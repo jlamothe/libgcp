@@ -37,7 +37,7 @@ http://www.gnu.org/licenses/
  * FUNCTION DEFINITIONS
  */
 
-uint16_t gen_crc(const uint8_t *data, uint16_t size)
+uint16_t gen_crc16(const uint8_t *data, uint16_t size)
 {
     uint16_t out = 0;
     int bits_read = 0, bit_flag;
@@ -71,11 +71,11 @@ uint16_t gen_crc(const uint8_t *data, uint16_t size)
     return out;
 }
 
-int check_crc(const uint8_t *data, uint16_t size, uint16_t crc)
+int check_crc16(const uint8_t *data, uint16_t size, uint16_t crc)
 {
     if(data == NULL)
         return -1;
-    return (crc == gen_crc(data, size)) ? 0 : 1;
+    return (crc == gen_crc16(data, size)) ? 0 : 1;
 }
 
 /* jl */

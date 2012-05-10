@@ -266,7 +266,7 @@ void recv_crc1(GCPConn *c, uint8_t b)
 void recv_crc2(GCPConn *c, uint8_t b)
 {
     c->recv_crc |= b;
-    if(check_crc(c->recv_buf, c->recv_buf->data_size, c->recv_crc))
+    if(check_crc16(c->recv_buf, c->recv_buf->data_size, c->recv_crc))
         c->recv_lock = 0;
     c->recv_state = GCPConn::preamble1;
 }
@@ -338,7 +338,7 @@ uint8_t send_payload(GCPComm *c)
 
 uint8_t send_crc1(GCPComm *c);
 {
-    c->crc_send = gen_crc(c->send_buf, c->send_size);
+    c->crc_send = gen_crc16(c->send_buf, c->send_size);
     c->send_state = GCPComm::crc2;
     return c->crc_send >> 8;
 }
