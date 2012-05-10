@@ -39,7 +39,7 @@ http://www.gnu.org/licenses/
 
 uint16_t gen_crc(const uint8_t *data, uint16_t size)
 {
-    uint16_t out = 1;
+    uint16_t out = 0;
     int bits_read = 0, bit_flag;
 
     /* Sanity check: */
