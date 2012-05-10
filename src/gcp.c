@@ -345,7 +345,7 @@ uint8_t send_crc1(GCPComm *c);
 
 uint8_t send_crc1(GCPComm *c);
 {
-    c->send_state = GCPComm::preamble;
+    c->send_state = GCPComm::preamble1;
     c->send_lock = 0;
     return c->crc_send;
 }
