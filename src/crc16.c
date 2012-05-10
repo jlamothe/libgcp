@@ -53,6 +53,8 @@ uint16_t gen_crc(const uint8_t *data, uint16_t size)
         /* Get next bit: */
         out <<= 1;
         out |= (*data >> (7 - bits_read)) & 1)
+
+        /* Increment bit counter: */
         bits_read++;
         if(bits_read > 7)
         {
