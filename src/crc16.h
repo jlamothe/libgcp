@@ -40,6 +40,9 @@ http://www.gnu.org/licenses/
 /**
    \brief Generates a CRC code for a block of data.
 
+   \note This function calculates the checksum of the data pre-pended
+   with a 1 bit so that leading zeroes affect the checksum.
+
    \param data The data being used to generate the checksum.
 
    \param size The size (in bytes) of the data being CRC'd.
@@ -50,6 +53,9 @@ uint16_t gen_crc(const uint8_t *data, uint16_t size);
 
 /**
    \brief Validates a CRC code for a block of data.
+
+   \note This function calculates the checksum of the data pre-pended
+   with a 1 bit so that leading zeroes affect the checksum.
 
    \param data The data being checked.
 
