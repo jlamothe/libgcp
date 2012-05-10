@@ -34,19 +34,6 @@ http://www.gnu.org/licenses/
 #define CRC16 0x8005
 
 /*
- * FUNCTION PROTOTYPES
- */
-
-/**
-   \brief Counts the minimum number of bits to represent a value.
-
-   \param n The value.
-
-   \return The number of bits.
- */
-static int count_bits(uint16_t n)
-
-/*
  * FUNCTION DEFINITIONS
  */
 
@@ -78,22 +65,6 @@ uint16_t gen_crc(const uint8_t *data, uint16_t size)
         if(bit_flag)
             out = out ^ CRC16;
 
-    }
-    return out;
-}
-
-int crc_ge(uint16_t a, uint16_t b)
-{
-    return count_bits(a) >= count_bits(b);
-}
-
-int count_bits(uint16_t n)
-{
-    int out = 0;
-    while(n)
-    {
-        n >>= 1;
-        out++;
     }
     return out;
 }
