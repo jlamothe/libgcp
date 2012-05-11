@@ -1,1 +1,15 @@
 *~
+*.cache
+*-h1
+*.in
+*.log
+*.m4
+*.scan
+*-sh
+*.sh
+Makefile
+config.*
+configure
+depcomp
+libtool
+missing
