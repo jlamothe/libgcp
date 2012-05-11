@@ -36,6 +36,35 @@ extern "C" {
     /*
      * TYPEDEFS
      */
+
+    /** \brief Communication state. */
+    typedef enum {
+
+        /** \brief Reading first byte of the preamble. */
+        gcp_preamble1,
+
+        /** \brief Reading second byte of the preamble. */
+        gcp_preamble2,
+
+        /** \brief Reading first byte of the payload size. */
+        gcp_size1,
+
+        /** \brief Reading second byte of the payload size. */
+        gcp_size2,
+
+        /** \brief Reading payload data. */
+        gcp_payload,
+
+        /** \brief Reading first byte of the checksum. */
+        gcp_crc1,
+
+        /** \brief Reading second byte of the checksum. */
+        gcp_crc2,
+
+    } GCPFrameState;
+
+
+
     typedef struct
     {
 
@@ -66,42 +95,16 @@ extern "C" {
         uint16_t bytes_sent;
 
         /** \brief The crc checksum of the received data. */
-        uint16_t crc_recv;
+        uint16_t recv_crc;
 
         /** \brief The crc checksum of the data being sent. */
-        uint16_t crc_send;
-
-        /** \brief Communication state. */
-        typedef enum {
-
-            /** \brief Reading first byte of the preamble. */
-            preamble1,
-
-            /** \brief Reading second byte of the preamble. */
-            preamble2,
-
-            /** \brief Reading first byte of the payload size. */
-            size1,
-
-            /** \brief Reading second byte of the payload size. */
-            size2,
-
-            /** \brief Reading payload data. */
-            payload,
-
-            /** \brief Reading first byte of the checksum. */
-            crc1,
-
-            /** \brief Reading second byte of the checksum. */
-            crc2,
-
-        } FrameState;
+        uint16_t send_crc;
 
         /** \brief The receive state. */
-        FrameState recv_state;
+        GCPFrameState recv_state;
 
         /** \brief The send state. */
-        FrameState send_state;
+        GCPFrameState send_state;
 
         /** \brief When true, indicates that the receive buffer is
             being written to and should not be read from. */

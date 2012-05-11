@@ -173,10 +173,10 @@ int gcp_init(GCPConn *c)
     c->data_size = 0;
     c->bytes_rcvd = 0;
     c->bytes_sent = 0;
-    c->crc_recv = 0;
-    c->crc_send = 0;
-    c->recv_state = GCPConn::preamble1;
-    c->send_state = GCPConn::preamble1;
+    c->recv_crc = 0;
+    c->send_crc = 0;
+    c->recv_state = gcp_preamble1;
+    c->send_state = gcp_preamble1;
     c->recv_lock = 1;
     c->send_lock = 0;
     return 0;
@@ -189,25 +189,25 @@ int gcp_recv_byte(GCPConn *c, uint8_t b)
     c->recv_lock = 1;
     switch(c->recv_state)
     {
-    case GCPConn::preamble1:
+    case gcp_preamble1:
         recv_preamble1(c, b);
         break;
-    case GCPConn::preamble2:
+    case gcp_preamble2:
         recv_preamble2(c, b);
         break;
-    case GCPConn::size1:
+    case gcp_size1:
         recv_size1(c, b);
         break;
-    case GCPConn::size2:
+    case gcp_size2:
         recv_size2(c, b);
         break;
-    case GCPConn::read_data:
+    case gcp_payload:
         recv_payload(c, b);
         break;
-    case GCPConn::crc1:
+    case gcp_crc1:
         recv_crc1(c, b);
         break;
-    case GCPConn::crc2:
+    case gcp_crc2:
         recv_crc2(c, b);
         break;
     }
@@ -217,32 +217,32 @@ int gcp_recv_byte(GCPConn *c, uint8_t b)
 void recv_preamble1(GCPConn *c, uint8_t b)
 {
     if(b == 0x17)
-        c->recv_state = GCPConn::preamble2;
+        c->recv_state = gcp_preamble2;
 }
 
 void recv_preamble2(GCPConn *c, uint8_t b)
 {
     if(b == 0x01)
-        c->recv_state = GCPConn::size1;
+        c->recv_state = gcp_size1;
     else
-        c->recv_state = GCPConn::preamble1;
+        c->recv_state = gcp_preamble1;
 }
 
 void recv_size1(GCPConn *c, uint8_t b)
 {
     c->data_size = b;
     c->data_size <<= 8;
-    c->recv_state = GCPConn::size2;
+    c->recv_state = gcp_size2;
 }
 
 void recv_size2(GCPConn *c, uint8_t b)
 {
     c->data_size |= b;
     if(c->data_size == 0)
-        c->recv_state = GCPConn::crc1;
+        c->recv_state = gcp_crc1;
     else
     {
-        c->recv_state = GCPConn::payload;
+        c->recv_state = gcp_payload;
         c->bytes_rcvd = 0;
     }
 }
@@ -250,25 +250,25 @@ void recv_size2(GCPConn *c, uint8_t b)
 void recv_payload(GCPConn *c, uint8_t b)
 {
     if(c->recv_buf != NULL && c->recv_size > c->bytes_rcvd)
-        in_buf[c->bytes_rcvd] = b;
+        c->recv_buf[c->bytes_rcvd] = b;
     c->bytes_rcvd++;
     if(c->bytes_rcvd >= c->data_size)
-        c->recv_state = GCPConn::crc1;
+        c->recv_state = gcp_crc1;
 }
 
 void recv_crc1(GCPConn *c, uint8_t b)
 {
     c->recv_crc = b;
     c->recv_crc <<= 8;
-    c->recv_state = GCPConn::crc2;
+    c->recv_state = gcp_crc2;
 }
 
 void recv_crc2(GCPConn *c, uint8_t b)
 {
     c->recv_crc |= b;
-    if(check_crc16(c->recv_buf, c->recv_buf->data_size, c->recv_crc))
+    if(check_crc16(c->recv_buf, c->data_size, c->recv_crc))
         c->recv_lock = 0;
-    c->recv_state = GCPConn::preamble1;
+    c->recv_state = gcp_preamble1;
 }
 
 uint8_t gcp_send_byte(GCPConn *c)
@@ -278,76 +278,76 @@ uint8_t gcp_send_byte(GCPConn *c)
     c->send_lock = 1;
     switch(c->send_state)
     {
-    case GCPComm::preamble1:
-        return send_preamble1(GCPComm *c);
-    case GCPComm::preamble2:
-        return send_preamble2(GCPComm *c);
-    case GCPComm::size1:
-        return send_preamble1(GCPComm *c);
-    case GCPComm::size2:
-        return send_preamble1(GCPComm *c);
-    case GCPComm::payload:
-        return send_payload(GCPComm *c);
-    case GCPComm::crc1:
-        return send_crc1(GCPComm *c);
-    case GCPComm::crc2:
-        return send_crc2(GCPComm *c);
+    case gcp_preamble1:
+        return send_preamble1(c);
+    case gcp_preamble2:
+        return send_preamble2(c);
+    case gcp_size1:
+        return send_preamble1(c);
+    case gcp_size2:
+        return send_preamble1(c);
+    case gcp_payload:
+        return send_payload(c);
+    case gcp_crc1:
+        return send_crc1(c);
+    case gcp_crc2:
+        return send_crc2(c);
     }
     return 0;
 }
 
-uint8_t send_preamble1(GCPComm *c)
+uint8_t send_preamble1(GCPConn *c)
 {
-    c->send_state = GCPComm::send_preamble2;
+    c->send_state = gcp_preamble2;
     return 0x17;
 }
 
-uint8_t send_preamble1(GCPComm *c)
+uint8_t send_preamble2(GCPConn *c)
 {
-    c->send_state = GCPComm::send_size1;
+    c->send_state = gcp_size1;
     return 0x01;
 }
 
-uint8_t send_size1(GCPComm *c)
+uint8_t send_size1(GCPConn *c)
 {
-    c->send_state = GCPComm::send_size2;
+    c->send_state = gcp_size2;
     return c->send_size >> 8;
 }
 
-uint8_t send_size1(GCPComm *c)
+uint8_t send_size2(GCPConn *c)
 {
     if(c->send_size == 0)
-        c->send_state = GCPComm::crc1;
+        c->send_state = gcp_crc1;
     else
     {
-        c->send_state = GCPComm::payload;
+        c->send_state = gcp_payload;
         c->bytes_sent = 0;
     }
     return c->send_size;
 }
 
-uint8_t send_payload(GCPComm *c)
+uint8_t send_payload(GCPConn *c)
 {
     c->bytes_sent++;
-    if(c->bytes_sent >= send_size)
-        c->send_state = GCPComm::crc1;
+    if(c->bytes_sent >= c->send_size)
+        c->send_state = gcp_crc1;
     if(c->send_buf == NULL)
         return 0;
     return c->send_buf[c->bytes_sent - 1];
 }
 
-uint8_t send_crc1(GCPComm *c);
+uint8_t send_crc1(GCPConn *c)
 {
-    c->crc_send = gen_crc16(c->send_buf, c->send_size);
-    c->send_state = GCPComm::crc2;
-    return c->crc_send >> 8;
+    c->send_crc = gen_crc16(c->send_buf, c->send_size);
+    c->send_state = gcp_crc2;
+    return c->send_crc >> 8;
 }
 
-uint8_t send_crc1(GCPComm *c);
+uint8_t send_crc2(GCPConn *c)
 {
-    c->send_state = GCPComm::preamble1;
+    c->send_state = gcp_preamble1;
     c->send_lock = 0;
-    return c->crc_send;
+    return c->send_crc;
 }
 
 /* jl */
