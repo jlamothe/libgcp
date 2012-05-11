@@ -224,7 +224,7 @@ void recv_preamble2(GCPConn *c, uint8_t b)
 {
     if(b == 0x01)
         c->recv_state = gcp_size1;
-    else
+    else if(b != 0x17)
         c->recv_state = gcp_preamble1;
 }
 
