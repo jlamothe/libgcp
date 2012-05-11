@@ -24,8 +24,20 @@ http://www.gnu.org/licenses/
  * INCLUDES
  */
 
+#include <config.h>
+
+#if !HAVE_STDINT_H
+#error missing stdint.h
+#endif
+
 #include "gcp.h"
+
+#if HAVE_STDLIB_H
 #include <stdlib.h>
+#else
+#error missing stdlib.h
+#endif
+
 #include "crc16.h"
 
 /*
