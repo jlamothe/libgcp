@@ -232,7 +232,7 @@ void recv_size1(GCPConn *c, uint8_t b)
 {
     c->data_size = b;
     c->data_size <<= 8;
-    c->recv_state = read_size2;
+    c->recv_state = GCPConn::size2;
 }
 
 void recv_size2(GCPConn *c, uint8_t b)
@@ -242,7 +242,7 @@ void recv_size2(GCPConn *c, uint8_t b)
         c->recv_state = GCPConn::crc1;
     else
     {
-        c->recv_state = GCPConn::read_data;
+        c->recv_state = GCPConn::payload;
         c->bytes_rcvd = 0;
     }
 }
