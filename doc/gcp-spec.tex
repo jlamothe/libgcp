@@ -1,0 +1,44 @@
+\documentclass{article}
+\title{GCP Specification}
+\author{Jonathan Lamothe}
+\usepackage[pdfborder={0 0 0}]{hyperref}
+\begin{document}
+
+\maketitle
+
+\section{Summary}
+GCP (Generic Communications Protocol) is intended to send data over a
+network in a simple, open manner.  While it can essentially be used on
+any type of communications layer, it was specifically designed for
+serial networks, such as RS232 or RS485.  The protocol provides its
+own error detection, making such a service unnecessary at a lower
+layer.
+
+\begin{description}
+  \item[Note:]Throughout this document, the terms ``byte'' and
+    ``octet'' are used interchangeably.  All offsets and sizes listed
+    are in octets.  Values requiring more than one octet to store are
+    stored MSB first (i.e.: with the most significant byte at the
+    lowest offset) unless otherwise specified.
+\end{description}
+
+\section{General Packet Format}
+All data sent over GCP is encoded using the general packet format (see
+table \ref{tab:gen-pkt-fmt}).  The format of the $Payload$ field
+varies depending on the type of message.
+
+\begin{table}[hbp]
+  \center
+  \begin{tabular}{cccc}
+    \textbf{Offset} & \textbf{Size} & \textbf{Name} & \textbf{Value}\\
+    \hline
+    0 & 2 & $Preamble$ & \texttt{0x17, 0x01}\\
+    2 & 2 & $Size$ & $n$\\
+    4 & $n$ & $Payload$ & the payload data\\
+    $n + 4$ & 2 & $CRC$ & CRC16 checksum of $Payload$\\
+    \hline
+  \end{tabular}
+  \caption{General Packet Format\label{tab:gen-pkt-fmt}}
+\end{table}
+
+\end{document}
