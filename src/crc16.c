@@ -76,7 +76,7 @@ uint16_t gen_crc16(const uint8_t *data, uint16_t size)
 
         /* Cycle check: */
         if(bit_flag)
-            out = out ^ CRC16;
+            out ^= CRC16;
 
     }
     return out;
