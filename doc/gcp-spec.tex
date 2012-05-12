@@ -32,7 +32,7 @@ varies depending on the type of message.
   \begin{tabular}{cccc}
     \textbf{Offset} & \textbf{Size} & \textbf{Name} & \textbf{Value}\\
     \hline
-    0 & 2 & $Preamble$ & \texttt{0x17, 0x01}\\
+    0 & 2 & $Preamble$ & \texttt{0x17}, \texttt{0x01}\\
     2 & 2 & $Size$ & $n$\\
     4 & $n$ & $Payload$ & the payload data\\
     $n + 4$ & 2 & $CRC$ & CRC16 checksum of $Payload$\\
