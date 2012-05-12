@@ -39,18 +39,15 @@ http://www.gnu.org/licenses/
 #endif
 
 /*
- * DEFINES
- */
-
-#define CRC16 0x8005
-
-/*
  * FUNCTION DEFINITIONS
  */
 
-uint16_t gen_crc16(const uint8_t *data, uint16_t size)
+uint16_t gen_crc16(const uint8_t *data,
+                   uint16_t size,
+                   uint16_t poly,
+                   uint16_t pre)
 {
-    uint16_t out = 0;
+    uint16_t out = pre;
     int bits_read = 0, bit_flag;
 
     /* Sanity check: */
@@ -76,17 +73,21 @@ uint16_t gen_crc16(const uint8_t *data, uint16_t size)
 
         /* Cycle check: */
         if(bit_flag)
-            out ^= CRC16;
+            out ^= poly;
 
     }
     return out;
 }
 
-int check_crc16(const uint8_t *data, uint16_t size, uint16_t crc)
+int check_crc16(const uint8_t *data,
+                uint16_t size,
+                uint16_t poly,
+                uint16_t pre,
+                uint16_t crc)
 {
     if(data == NULL)
         return -1;
-    return (crc == gen_crc16(data, size)) ? 0 : 1;
+    return (crc == gen_crc16(data, size, poly, pre)) ? 0 : 1;
 }
 
 /* jl */

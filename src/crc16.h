@@ -44,9 +44,16 @@ http://www.gnu.org/licenses/
 
    \param size The size (in bytes) of the data being CRC'd.
 
+   \param poly The polynomial to be used for the CRC.
+
+   \param pre The value to prepend to the data string.
+
    \return The generated CRC code.
  */
-uint16_t gen_crc16(const uint8_t *data, uint16_t size);
+uint16_t gen_crc16(const uint8_t *data,
+                   uint16_t size,
+                   uint16_t poly,
+                   uint16_t pre);
 
 /**
    \brief Validates a CRC code for a block of data.
@@ -55,11 +62,19 @@ uint16_t gen_crc16(const uint8_t *data, uint16_t size);
 
    \param size The size (in bytes) of the data being checked.
 
+   \param poly The polynomial to be used for the CRC.
+
+   \param pre The value to prepend to the data string.
+
    \param crc The CRC being checked.
 
    \return 0 if the CRC code is valid, a non-zero value otherwise.
  */
-int check_crc16(const uint8_t *data, uint16_t size, uint16_t crc);
+int check_crc16(const uint8_t *data,
+                uint16_t size,
+                uint16_t poly,
+                uint16_t pre,
+                uint16_t crc);
 
 #ifdef __cplusplus
 }

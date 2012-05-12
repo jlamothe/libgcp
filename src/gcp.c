@@ -41,6 +41,16 @@ http://www.gnu.org/licenses/
 #include "crc16.h"
 
 /*
+ * DEFINES
+ */
+
+/** \brief The polynomial to be used for the CRC calculation. */
+#define POLY 0x8005
+
+/** \brief The prepend value to be used for the CRC calculation. */
+#define PRE 1
+
+/*
  * FUNCTION PROTOTYPES
  */
 
@@ -278,7 +288,11 @@ void recv_crc1(GCPConn *c, uint8_t b)
 void recv_crc2(GCPConn *c, uint8_t b)
 {
     c->recv_crc |= b;
-    if(check_crc16(c->recv_buf, c->data_size, c->recv_crc))
+    if(check_crc16(c->recv_buf,
+                   c->data_size,
+                   POLY,
+                   PRE,
+                   c->recv_crc))
         c->recv_lock = 0;
     c->recv_state = gcp_preamble1;
 }
@@ -350,7 +364,7 @@ uint8_t send_payload(GCPConn *c)
 
 uint8_t send_crc1(GCPConn *c)
 {
-    c->send_crc = gen_crc16(c->send_buf, c->send_size);
+    c->send_crc = gen_crc16(c->send_buf, c->send_size, POLY, PRE);
     c->send_state = gcp_crc2;
     return c->send_crc >> 8;
 }
