@@ -1,12 +1,15 @@
 *~
 *.cache
+*.deb
 *-h1
 *.in
 *.log
 *.m4
+*-pak
 *.scan
 *-sh
 *.sh
+*.tgz
 Makefile
 config.*
 configure
