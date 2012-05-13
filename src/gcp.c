@@ -288,11 +288,11 @@ void recv_crc1(GCPConn *c, uint8_t b)
 void recv_crc2(GCPConn *c, uint8_t b)
 {
     c->recv_crc |= b;
-    if(check_crc16(c->recv_buf,
-                   c->data_size,
-                   POLY,
-                   PRE,
-                   c->recv_crc))
+    if(!check_crc16(c->recv_buf,
+                    c->data_size,
+                    POLY,
+                    PRE,
+                    c->recv_crc))
         c->recv_lock = 0;
     c->recv_state = gcp_preamble1;
 }
@@ -309,9 +309,9 @@ uint8_t gcp_send_byte(GCPConn *c)
     case gcp_preamble2:
         return send_preamble2(c);
     case gcp_size1:
-        return send_preamble1(c);
+        return send_size1(c);
     case gcp_size2:
-        return send_preamble1(c);
+        return send_size2(c);
     case gcp_payload:
         return send_payload(c);
     case gcp_crc1:
