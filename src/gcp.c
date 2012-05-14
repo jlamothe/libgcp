@@ -48,7 +48,7 @@ http://www.gnu.org/licenses/
 #define POLY 0x8005
 
 /** \brief The prepend value to be used for the CRC calculation. */
-#define PRE 1
+#define PRE 0
 
 /*
  * FUNCTION PROTOTYPES
