@@ -30,51 +30,64 @@ http://www.gnu.org/licenses/
 #include <stdint.h>
 
 #ifdef __cplusplus
-#extern "C" {
+extern "C" {
 #endif
 
-/*
- * FUNCTION PROTOTYPES
- */
+    /*
+     * FUNCTION PROTOTYPES
+     */
 
-/**
-   \brief Generates a CRC code for a block of data.
+    /**
+       \brief Generates a CRC code for a block of data.
 
-   \param data The data being used to generate the checksum.
+       \param data The data being used to generate the checksum.
 
-   \param size The size (in bytes) of the data being CRC'd.
+       \param size The size (in bytes) of the data being CRC'd.
 
-   \param poly The polynomial to be used for the CRC.
+       \param poly The polynomial to be used for the CRC.
 
-   \param pre The value to prepend to the data string.
+       \param pre The value to prepend to the data string.
 
-   \return The generated CRC code.
- */
-uint16_t gen_crc16(const uint8_t *data,
-                   uint16_t size,
-                   uint16_t poly,
-                   uint16_t pre);
+       \return The generated CRC code.
+     */
+    uint16_t gen_crc16(const uint8_t *data,
+                       uint16_t size,
+                       uint16_t poly,
+                       uint16_t pre);
 
-/**
-   \brief Validates a CRC code for a block of data.
+    /**
+       \brief Process a single byte in a CRC16 checksum.
 
-   \param data The data being checked.
+       \param prev The previously calculated value.
 
-   \param size The size (in bytes) of the data being checked.
+       \param byte The byte being processed.
 
-   \param poly The polynomial to be used for the CRC.
+       \param poly The polynomial being used for the CRC.
+     */
+    uint16_t process_crc16_byte(uint16_t prev,
+                                uint8_t byte,
+                                uint16_t poly);
 
-   \param pre The value to prepend to the data string.
+    /**
+       \brief Validates a CRC code for a block of data.
 
-   \param crc The CRC being checked.
+       \param data The data being checked.
 
-   \return 0 if the CRC code is valid, a non-zero value otherwise.
- */
-int check_crc16(const uint8_t *data,
-                uint16_t size,
-                uint16_t poly,
-                uint16_t pre,
-                uint16_t crc);
+       \param size The size (in bytes) of the data being checked.
+
+       \param poly The polynomial to be used for the CRC.
+
+       \param pre The value to prepend to the data string.
+
+       \param crc The CRC being checked.
+
+       \return 0 if the CRC code is valid, a non-zero value otherwise.
+     */
+    int check_crc16(const uint8_t *data,
+                    uint16_t size,
+                    uint16_t poly,
+                    uint16_t pre,
+                    uint16_t crc);
 
 #ifdef __cplusplus
 }

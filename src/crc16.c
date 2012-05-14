@@ -47,36 +47,30 @@ uint16_t gen_crc16(const uint8_t *data,
                    uint16_t poly,
                    uint16_t pre)
 {
-    uint16_t out = pre;
-    int bits_read = 0, bit_flag;
-
-    /* Sanity check: */
+    uint16_t i;
     if(data == NULL)
         return 0;
+    for(i = 0; i < size; i++)
+        pre = process_crc16_byte(pre, data[i], poly);
+    for(i = 0; i < 2; i++)
+        pre = process_crc16_byte(pre, 0, poly);
+    return pre;
+}
 
-    while(size > 0)
+uint16_t process_crc16_byte(uint16_t prev,
+                            uint8_t byte,
+                            uint16_t poly)
+{
+    int i, bit_flag;
+    for(i = 0; i < 8; i++)
     {
-        bit_flag = out >> 15;
-
-        /* Get next bit: */
-        out <<= 1;
-        out |= (*data >> (7 - bits_read)) & 1;
-
-        /* Increment bit counter: */
-        bits_read++;
-        if(bits_read > 7)
-        {
-            bits_read = 0;
-            data++;
-            size--;
-        }
-
-        /* Cycle check: */
+        bit_flag = prev >> 15;
+        prev <<= 1;
+        prev |= (byte >> (7 - i)) & 1;
         if(bit_flag)
-            out ^= poly;
-
+            prev ^= poly;
     }
-    return out;
+    return prev;
 }
 
 int check_crc16(const uint8_t *data,
