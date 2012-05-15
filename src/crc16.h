@@ -76,7 +76,7 @@ extern "C" {
 
        \return The generated CRC code or 0 on failure.
      */
-    uint16_t gen_crc16(const uint8_t *data,
+    uint16_t crc16_gen(const uint8_t *data,
                        uint16_t size,
                        const CRC16Params *params);
 
@@ -93,7 +93,7 @@ extern "C" {
 
        \return 0 if the CRC code is valid, a non-zero value otherwise.
      */
-    int check_crc16(const uint8_t *data,
+    int crc16_check(const uint8_t *data,
                     uint16_t size,
                     const CRC16Params *params,
                     uint16_t crc);
@@ -110,10 +110,21 @@ extern "C" {
 
        \param poly The polynomial being used for the CRC.
      */
-    uint16_t process_crc16_byte(uint16_t prev,
+    uint16_t crc16_process_byte(uint16_t prev,
                                 uint8_t byte,
                                 uint16_t poly,
                                 int msb_first);
+
+    /**
+       \brief Processes the remaining 16 bits in a CRC checksum.
+
+       \param prev The calculated value before the flush.
+
+       \param poly The polynomial to use.
+
+       \return The calculated checksum.
+     */
+    uint16_t crc16_flush(uint16_t prev, uint16_t poly);
 
 #ifdef __cplusplus
 }

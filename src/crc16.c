@@ -49,7 +49,7 @@ http://www.gnu.org/licenses/
 
    \return The flipped value.
  */
-uint8_t flip_8bit(uint8_t val);
+static uint8_t flip_8bit(uint8_t val);
 
 /**
    \brief Reverses the bits in a uint16_t value.
@@ -58,13 +58,13 @@ uint8_t flip_8bit(uint8_t val);
 
    \return The flipped value.
  */
-uint16_t flip_16bit(uint16_t val);
+static uint16_t flip_16bit(uint16_t val);
 
 /*
  * FUNCTION DEFINITIONS
  */
 
-uint16_t gen_crc16(const uint8_t *data,
+uint16_t crc16_gen(const uint8_t *data,
                    uint16_t size,
                    const CRC16Params *params)
 {
@@ -74,34 +74,33 @@ uint16_t gen_crc16(const uint8_t *data,
     out = params->prefix;
     if(params->flip_bytes)
         for(i = size - 1; i > 0; i--)
-            out = process_crc16_byte(out,
+            out = crc16_process_byte(out,
                                      data[i],
                                      params->poly,
                                      params->flip_bits);
     else
         for(i = 0; i < size; i++)
-            out = process_crc16_byte(out,
+            out = crc16_process_byte(out,
                                      data[i],
                                      params->poly,
                                      params->flip_bits);
-    for(i = 0; i < 2; i++)
-        out = process_crc16_byte(out, 0, params->poly, 0);
+    out = crc16_flush(out, params->poly);
     if(params->flip_output)
         out = flip_16bit(out);
     return out;
 }
 
-int check_crc16(const uint8_t *data,
+int crc16_check(const uint8_t *data,
                 uint16_t size,
                 const CRC16Params *params,
                 uint16_t crc)
 {
     if(data == NULL || params == NULL)
         return -1;
-    return (crc == gen_crc16(data, size, params)) ? 0 : 1;
+    return (crc == crc16_gen(data, size, params)) ? 0 : 1;
 }
 
-uint16_t process_crc16_byte(uint16_t prev,
+uint16_t crc16_process_byte(uint16_t prev,
                             uint8_t byte,
                             uint16_t poly,
                             int msb_first)
@@ -118,6 +117,13 @@ uint16_t process_crc16_byte(uint16_t prev,
             prev ^= poly;
     }
     return prev;
+}
+
+uint16_t crc16_flush(uint16_t prev, uint16_t poly)
+{
+    int i;
+    for(i = 0; i < 2; i++)
+        prev = crc16_process_byte(prev, 0, poly, 0);
 }
 
 uint8_t flip_8bit(uint8_t val)
