@@ -81,32 +81,6 @@ extern "C" {
                        const CRC16Params *params);
 
     /**
-       \brief Process a single byte in a CRC16 checksum.
-
-       \param prev The previously calculated value.
-
-       \param byte The byte being processed.
-
-       \param msb_first Set to a non-zero value when the most
-       significant bit of the data is to be processed first.
-
-       \param poly The polynomial being used for the CRC.
-     */
-    uint16_t process_crc16_byte(uint16_t prev,
-                                uint8_t byte,
-                                uint16_t poly,
-                                int msb_first);
-
-    /**
-       \brief Reverses the bits in a uint16_t value.
-
-       \param val The value to be flipped.
-
-       \return The flipped value.
-     */
-    uint16_t flip_16bit(uint16_t val);
-
-    /**
        \brief Validates a CRC code for a block of data.
 
        \param data The data being checked.
@@ -123,6 +97,23 @@ extern "C" {
                     uint16_t size,
                     const CRC16Params *params,
                     uint16_t crc);
+
+    /**
+       \brief Process a single byte in a CRC16 checksum.
+
+       \param prev The previously calculated value.
+
+       \param byte The byte being processed.
+
+       \param msb_first Set to a non-zero value when the most
+       significant bit of the data is to be processed first.
+
+       \param poly The polynomial being used for the CRC.
+     */
+    uint16_t process_crc16_byte(uint16_t prev,
+                                uint8_t byte,
+                                uint16_t poly,
+                                int msb_first);
 
 #ifdef __cplusplus
 }

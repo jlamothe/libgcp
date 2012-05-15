@@ -39,6 +39,28 @@ http://www.gnu.org/licenses/
 #endif
 
 /*
+ * FUNCTION PROTOTYPES
+ */
+
+/**
+   \brief Reverses the bits in a uint16_t value.
+
+   \param val The value to be flipped.
+
+   \return The flipped value.
+ */
+uint8_t flip_8bit(uint8_t val);
+
+/**
+   \brief Reverses the bits in a uint16_t value.
+
+   \param val The value to be flipped.
+
+   \return The flipped value.
+ */
+uint16_t flip_16bit(uint16_t val);
+
+/*
  * FUNCTION DEFINITIONS
  */
 
@@ -69,6 +91,16 @@ uint16_t gen_crc16(const uint8_t *data,
     return out;
 }
 
+int check_crc16(const uint8_t *data,
+                uint16_t size,
+                const CRC16Params *params,
+                uint16_t crc)
+{
+    if(data == NULL || params == NULL)
+        return -1;
+    return (crc == gen_crc16(data, size, params)) ? 0 : 1;
+}
+
 uint16_t process_crc16_byte(uint16_t prev,
                             uint8_t byte,
                             uint16_t poly,
@@ -76,7 +108,7 @@ uint16_t process_crc16_byte(uint16_t prev,
 {
     int i, bit_flag;
     if(msb_first)
-        byte = flip_16bit(byte);
+        byte = flip_8bit(byte);
     for(i = 0; i < 8; i++)
     {
         bit_flag = prev >> 15;
@@ -88,6 +120,16 @@ uint16_t process_crc16_byte(uint16_t prev,
     return prev;
 }
 
+uint8_t flip_8bit(uint8_t val)
+{
+    uint8_t out = 0;
+    int i;
+    for(i = 0; i < 8; i++)
+        if(val & (1 << i))
+            out |= 0x80 >> i;
+    return out;
+}
+
 uint16_t flip_16bit(uint16_t val)
 {
     uint16_t out = 0;
@@ -96,16 +138,6 @@ uint16_t flip_16bit(uint16_t val)
         if(val & (1 << i))
             out |= 0x8000 >> i;
     return out;
-}
-
-int check_crc16(const uint8_t *data,
-                uint16_t size,
-                const CRC16Params *params,
-                uint16_t crc)
-{
-    if(data == NULL || params == NULL)
-        return -1;
-    return (crc == gen_crc16(data, size, params)) ? 0 : 1;
 }
 
 /* jl */
