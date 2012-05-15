@@ -62,11 +62,24 @@ extern "C" {
 
        \param byte The byte being processed.
 
+       \param msb_first Set to a non-zero value when the most
+       significant bit of the data is to be processed first.
+
        \param poly The polynomial being used for the CRC.
      */
     uint16_t process_crc16_byte(uint16_t prev,
                                 uint8_t byte,
-                                uint16_t poly);
+                                uint16_t poly,
+                                int msb_first);
+
+    /**
+       \breif Reverses the bits in a uint16_t value.
+
+       \param val The value to be flipped.
+
+       \return The flipped value.
+     */
+    uint16_t flip_16bit(uint16_t val);
 
     /**
        \brief Validates a CRC code for a block of data.

@@ -51,26 +51,39 @@ uint16_t gen_crc16(const uint8_t *data,
     if(data == NULL)
         return 0;
     for(i = 0; i < size; i++)
-        pre = process_crc16_byte(pre, data[i], poly);
+        pre = process_crc16_byte(pre, data[i], poly, 1);
     for(i = 0; i < 2; i++)
-        pre = process_crc16_byte(pre, 0, poly);
+        pre = process_crc16_byte(pre, 0, poly, 1);
     return pre;
 }
 
 uint16_t process_crc16_byte(uint16_t prev,
                             uint8_t byte,
-                            uint16_t poly)
+                            uint16_t poly,
+                            int msb_first)
 {
     int i, bit_flag;
+    if(msb_first)
+        byte = flip_16bit(byte);
     for(i = 0; i < 8; i++)
     {
         bit_flag = prev >> 15;
         prev <<= 1;
-        prev |= (byte >> (7 - i)) & 1;
+        prev |= (byte >> i) & 1;
         if(bit_flag)
             prev ^= poly;
     }
     return prev;
+}
+
+uint16_t flip_16bit(uint16_t val)
+{
+    uint16_t out = 0;
+    int i;
+    for(i = 0; i < 16; i++)
+        if(val & (1 << i))
+            out |= 0x8000 >> i;
+    return out;
 }
 
 int check_crc16(const uint8_t *data,
