@@ -1,7 +1,7 @@
 /** \file gcp.h */
 
 /*
-GCP (Generic Communications Protocol)
+GCP (Generic Communications Protocol) Library
 
 Copyright (C) 2012 Jonathan Lamothe <jonathan@jlamothe.net>
 
