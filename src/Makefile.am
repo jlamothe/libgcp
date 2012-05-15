@@ -17,6 +17,7 @@
 # http://www.gnu.org/licenses/
 
 lib_LTLIBRARIES = libgcp.la
+
 libgcp_la_SOURCES = crc16.c gcp.c
 libgcp_la_LDFLAGS = -version-info 0:0:0
 
