@@ -347,7 +347,7 @@ uint8_t send_size2(GCPConn *c)
     {
         c->send_state = gcp_payload;
         c->bytes_sent = 0;
-        c->send_crc = 0;
+        c->calc_crc = 0;
     }
     return c->send_size;
 }
@@ -358,7 +358,7 @@ uint8_t send_payload(GCPConn *c)
     if(c->send_buf == NULL)
         out = 0;
     else
-        out = c->send_buf[c->bytes_sent - 1];
+        out = c->send_buf[c->bytes_sent];
     c->bytes_sent++;
     c->send_crc = crc16_process_byte(c->send_crc, out, POLY, 0);
     if(c->bytes_sent >= c->send_size)
