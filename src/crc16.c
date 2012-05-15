@@ -84,9 +84,7 @@ uint16_t crc16_gen(const uint8_t *data,
                                      data[i],
                                      params->poly,
                                      params->flip_bits);
-    out = crc16_flush(out, params->poly);
-    if(params->flip_output)
-        out = flip_16bit(out);
+    out = crc16_flush(out, params->poly, params->flip_output);
     return out;
 }
 
@@ -119,11 +117,12 @@ uint16_t crc16_process_byte(uint16_t prev,
     return prev;
 }
 
-uint16_t crc16_flush(uint16_t prev, uint16_t poly)
+uint16_t crc16_flush(uint16_t prev, uint16_t poly, int flip)
 {
     int i;
     for(i = 0; i < 2; i++)
         prev = crc16_process_byte(prev, 0, poly, 0);
+    return flip ? flip_16bit(prev) : prev;
 }
 
 uint8_t flip_8bit(uint8_t val)

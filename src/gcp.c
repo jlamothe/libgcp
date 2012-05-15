@@ -41,11 +41,12 @@ http://www.gnu.org/licenses/
 #include "crc16.h"
 
 /*
- * GLOBALS
+ * DEFINES
  */
 
-/** \brief The parameters used by the GCP protocol. */
-const CRC16Params gcp_crc_params = { 0, 0x8005, 0, 0, 1 };
+/** \brief The polynomial used by the GCP protocol for CRC
+    calculation. */
+#define POLY 0x8005
 
 /*
  * FUNCTION PROTOTYPES
@@ -263,6 +264,7 @@ void recv_size2(GCPConn *c, uint8_t b)
     {
         c->recv_state = gcp_payload;
         c->bytes_rcvd = 0;
+        c->calc_crc = 0;
     }
 }
 
@@ -270,9 +272,13 @@ void recv_payload(GCPConn *c, uint8_t b)
 {
     if(c->recv_buf != NULL && c->recv_size > c->bytes_rcvd)
         c->recv_buf[c->bytes_rcvd] = b;
+    c->calc_crc = crc16_process_byte(c->calc_crc, b, POLY, 0);
     c->bytes_rcvd++;
     if(c->bytes_rcvd >= c->data_size)
+    {
+        c->calc_crc = crc16_flush(c->calc_crc, POLY, 1);
         c->recv_state = gcp_crc1;
+    }
 }
 
 void recv_crc1(GCPConn *c, uint8_t b)
@@ -285,10 +291,7 @@ void recv_crc1(GCPConn *c, uint8_t b)
 void recv_crc2(GCPConn *c, uint8_t b)
 {
     c->recv_crc |= b;
-    if(!check_crc16(c->recv_buf,
-                    c->data_size,
-                    &gcp_crc_params,
-                    c->recv_crc))
+    if(c->recv_crc == c->calc_crc)
         c->recv_lock = 0;
     c->recv_state = gcp_preamble1;
 }
@@ -344,25 +347,30 @@ uint8_t send_size2(GCPConn *c)
     {
         c->send_state = gcp_payload;
         c->bytes_sent = 0;
+        c->send_crc = 0;
     }
     return c->send_size;
 }
 
 uint8_t send_payload(GCPConn *c)
 {
-    c->bytes_sent++;
-    if(c->bytes_sent >= c->send_size)
-        c->send_state = gcp_crc1;
+    uint8_t out;
     if(c->send_buf == NULL)
-        return 0;
-    return c->send_buf[c->bytes_sent - 1];
+        out = 0;
+    else
+        out = c->send_buf[c->bytes_sent - 1];
+    c->bytes_sent++;
+    c->send_crc = crc16_process_byte(c->send_crc, out, POLY, 0);
+    if(c->bytes_sent >= c->send_size)
+    {
+        c->send_state = gcp_crc1;
+        c->send_crc = crc16_flush(c->send_crc, POLY, 1);
+    }
+    return out;
 }
 
 uint8_t send_crc1(GCPConn *c)
 {
-    c->send_crc = gen_crc16(c->send_buf,
-                            c->send_size,
-                            &gcp_crc_params);
     c->send_state = gcp_crc2;
     return c->send_crc >> 8;
 }

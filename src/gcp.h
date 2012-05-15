@@ -94,8 +94,12 @@ extern "C" {
         /** \brief Number of payload bytes sent. */
         uint16_t bytes_sent;
 
-        /** \brief The crc checksum of the received data. */
+        /** \brief The CRC checksum received from the stream. */
         uint16_t recv_crc;
+
+        /** \brief The calculated CRC checksum of the data
+            received. */
+        uint16_t calc_crc;
 
         /** \brief The crc checksum of the data being sent. */
         uint16_t send_crc;

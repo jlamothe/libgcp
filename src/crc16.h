@@ -122,9 +122,11 @@ extern "C" {
 
        \param poly The polynomial to use.
 
+       \param flip If non-zero, reverses the bit order of the output.
+
        \return The calculated checksum.
      */
-    uint16_t crc16_flush(uint16_t prev, uint16_t poly);
+    uint16_t crc16_flush(uint16_t prev, uint16_t poly, int flip);
 
 #ifdef __cplusplus
 }
