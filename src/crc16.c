@@ -65,7 +65,7 @@ uint16_t gen_crc16(const uint8_t *data,
     for(i = 0; i < 2; i++)
         out = process_crc16_byte(out, 0, params->poly, 0);
     if(params->flip_output)
-        out = flip_16bits(out);
+        out = flip_16bit(out);
     return out;
 }
 

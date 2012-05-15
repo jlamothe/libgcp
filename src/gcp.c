@@ -45,7 +45,7 @@ http://www.gnu.org/licenses/
  */
 
 /** \brief The parameters used by the GCP protocol. */
-const CRC16Params gcp_crc_params = { 0, 0x8005, 1, 0, 1 };
+const CRC16Params gcp_crc_params = { 0, 0x8005, 0, 0, 1 };
 
 /*
  * FUNCTION PROTOTYPES
