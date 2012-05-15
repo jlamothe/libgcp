@@ -10,17 +10,19 @@
 GCP (Generic Communications Protocol) is intended to send data over a
 network in a simple, open manner.  While it can essentially be used on
 any type of communications layer, it was specifically designed for
-serial networks, such as RS232 or RS485.  The protocol provides its
-own error detection, making such a service unnecessary at a lower
-layer.
+serial networks, such as RS232 or RS485, or other networks designed to
+send a stream of octets.  The protocol provides its own error
+detection, making such a service unnecessary at a lower layer.
 
-\begin{description}
-  \item[Note:]Throughout this document, the terms ``byte'' and
-    ``octet'' are used interchangeably.  All offsets and sizes listed
-    are in octets.  Values requiring more than one octet to store are
-    stored MSB first (i.e.: with the most significant byte at the
-    lowest offset) unless otherwise specified.
-\end{description}
+\subsection{Important Notes}
+\begin{itemize}
+\item Throughout this document, the terms ``byte'' and ``octet'' are
+  used interchangeably.
+\item All offsets and sizes listed are in octets, unless otherwise
+  specified.
+\item Values consisting of more than one octet are sent most
+  significant byte first, unless otherwise specified.
+\end{itemize}
 
 \section{General Packet Format}
 All data sent over GCP is encoded using the general packet format (see
@@ -35,17 +37,10 @@ varies depending on the type of message.
     0 & 2 & $Preamble$ & \texttt{0x17}, \texttt{0x01}\\
     2 & 2 & $Size$ & $n$\\
     4 & $n$ & $Payload$ & the payload data\\
-    $n + 4$ & 2 & $CRC$ & CRC of $Payload$ (see section \ref{sec:crc})\\
+    $n + 4$ & 2 & $CRC$ & CRC of $Payload$ (CRC-16-IBM format)\\
     \hline
   \end{tabular}
   \caption{General Packet Format\label{tab:gen-pkt-fmt}}
 \end{table}
-
-\subsection{CRC Calculation}
-\label{sec:crc}
-The CRC is calculated by prefixing the $Payload$ field with a value of
-1 and converting it to a number (MSB first).  Then a standard CRC-16
-calculation is performed using a polynomial of $x^{16} + x^{15} + x^2
-+ 1$.
 
 \end{document}
