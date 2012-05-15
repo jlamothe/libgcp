@@ -34,6 +34,34 @@ extern "C" {
 #endif
 
     /*
+     * TYPEDEFS
+     */
+
+    /** \brief CRC Parameters */
+    typedef struct
+    {
+
+        /** \brief Prefix to be added to the data. */
+        uint16_t prefix;
+
+        /** \brief Polynomial to be used. */
+        uint16_t poly;
+
+        /** \brief Process the most significant bit of each byte
+            first. */
+        unsigned flip_bits : 1;
+
+        /** \brief Process bytes at the highest index in the array
+            first. */
+        unsigned flip_bytes : 1;
+
+        /** \brief Reverse the bits in the output after
+            calculating. */
+        unsigned flip_output : 1;
+
+    } CRC16Params;
+
+    /*
      * FUNCTION PROTOTYPES
      */
 
@@ -44,16 +72,13 @@ extern "C" {
 
        \param size The size (in bytes) of the data being CRC'd.
 
-       \param poly The polynomial to be used for the CRC.
+       \param params A pointer to the CRC parameters.
 
-       \param pre The value to prepend to the data string.
-
-       \return The generated CRC code.
+       \return The generated CRC code or 0 on failure.
      */
     uint16_t gen_crc16(const uint8_t *data,
                        uint16_t size,
-                       uint16_t poly,
-                       uint16_t pre);
+                       const CRC16Params *params);
 
     /**
        \brief Process a single byte in a CRC16 checksum.
@@ -73,7 +98,7 @@ extern "C" {
                                 int msb_first);
 
     /**
-       \breif Reverses the bits in a uint16_t value.
+       \brief Reverses the bits in a uint16_t value.
 
        \param val The value to be flipped.
 
@@ -88,9 +113,7 @@ extern "C" {
 
        \param size The size (in bytes) of the data being checked.
 
-       \param poly The polynomial to be used for the CRC.
-
-       \param pre The value to prepend to the data string.
+       \param params A pointer to the CRC parameters.
 
        \param crc The CRC being checked.
 
@@ -98,8 +121,7 @@ extern "C" {
      */
     int check_crc16(const uint8_t *data,
                     uint16_t size,
-                    uint16_t poly,
-                    uint16_t pre,
+                    const CRC16Params *params,
                     uint16_t crc);
 
 #ifdef __cplusplus

@@ -44,17 +44,29 @@ http://www.gnu.org/licenses/
 
 uint16_t gen_crc16(const uint8_t *data,
                    uint16_t size,
-                   uint16_t poly,
-                   uint16_t pre)
+                   const CRC16Params *params)
 {
-    uint16_t i;
-    if(data == NULL)
+    uint16_t out, i;
+    if(data == NULL || params == NULL)
         return 0;
-    for(i = 0; i < size; i++)
-        pre = process_crc16_byte(pre, data[i], poly, 1);
+    out = params->prefix;
+    if(params->flip_bytes)
+        for(i = size - 1; i > 0; i--)
+            out = process_crc16_byte(out,
+                                     data[i],
+                                     params->poly,
+                                     params->flip_bits);
+    else
+        for(i = 0; i < size; i++)
+            out = process_crc16_byte(out,
+                                     data[i],
+                                     params->poly,
+                                     params->flip_bits);
     for(i = 0; i < 2; i++)
-        pre = process_crc16_byte(pre, 0, poly, 1);
-    return pre;
+        out = process_crc16_byte(out, 0, params->poly, 0);
+    if(params->flip_output)
+        out = flip_16bits(out);
+    return out;
 }
 
 uint16_t process_crc16_byte(uint16_t prev,
@@ -88,13 +100,12 @@ uint16_t flip_16bit(uint16_t val)
 
 int check_crc16(const uint8_t *data,
                 uint16_t size,
-                uint16_t poly,
-                uint16_t pre,
+                const CRC16Params *params,
                 uint16_t crc)
 {
-    if(data == NULL)
+    if(data == NULL || params == NULL)
         return -1;
-    return (crc == gen_crc16(data, size, poly, pre)) ? 0 : 1;
+    return (crc == gen_crc16(data, size, params)) ? 0 : 1;
 }
 
 /* jl */
