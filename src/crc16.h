@@ -1,4 +1,4 @@
-/** \file crc.h */
+/** \file crc16.h */
 
 /*
 GCP (Generic Communications Protocol) Library
@@ -51,8 +51,7 @@ extern "C" {
             first. */
         unsigned flip_bits : 1;
 
-        /** \brief Process bytes at the highest index in the array
-            first. */
+        /** \brief Process the last bytes in the stream first. */
         unsigned flip_bytes : 1;
 
         /** \brief Reverse the bits in the output after

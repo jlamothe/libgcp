@@ -1,4 +1,4 @@
-/** \file crc.c */
+/** \file crc16.c */
 
 /*
 GCP (Generic Communications Protocol) Library
@@ -43,7 +43,7 @@ http://www.gnu.org/licenses/
  */
 
 /**
-   \brief Reverses the bits in a uint16_t value.
+   \brief Reverses the bits in a uint8_t value.
 
    \param val The value to be flipped.
 

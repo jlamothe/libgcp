@@ -63,8 +63,7 @@ extern "C" {
 
     } GCPFrameState;
 
-
-
+    /** \brief GCP connection parameters and state. */
     typedef struct
     {
 
@@ -114,8 +113,8 @@ extern "C" {
             being written to and should not be read from. */
         unsigned recv_lock : 1;
 
-        /** \brief When true, indicates that the receive buffer is
-            being read from and should not be written to. */
+        /** \brief When true, indicates that the send buffer is being
+            read from and should not be written to. */
         unsigned send_lock : 1;
 
     } GCPConn;
