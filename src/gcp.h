@@ -126,7 +126,7 @@ extern "C" {
     /**
        \brief Initializes a GCPConn object.
 
-       \param A pointer to the object to be initialized.
+       \param c A pointer to the object to be initialized.
 
        \return 0 on success; a non-zero value on failure.
      */
