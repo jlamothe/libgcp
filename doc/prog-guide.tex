@@ -1,0 +1,91 @@
+\documentclass{article}
+\title{libgcp Programmer's Guide}
+\author{Jonathan Lamothe}
+\usepackage[pdfborder={0 0 0}]{hyperref}
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+GCP (the Generic Communications Protocol) is intended to send messages
+of an arbitrary number of octets over a network in a simple, open
+manner.  While it can be used on may different types of networks, it
+was specifically designed for serial networks, such as RS232, RS485,
+or other networks designed to send a stream of octets.  The protocol
+provides its own error detection, making such a service unnecessary at
+a lower layer.
+
+This protocol does not implicitly provide addressing, message
+acknowledgement, or streaming services, although, such services can be
+implemented on top of it.  The protocol also places no restrictions on
+the content or format of its messages' payloads.
+
+libgcp does not actually \emph{send} or \emph{receive} data.  It
+merely assembles and processes frames.  It is up to the programmer to
+send and receive the frames to and from what ever data stream they're
+using for transport.
+
+\begin{description}
+\item[Note:]This document is intended to give an overview of how to
+  use libgcp.  For a more detailed descripiton on the various
+  functions and structures, please refer to the reference manual.
+\end{description}
+
+\section{The \texttt{GCPConn} Structure}
+Before any data can be processed, a \texttt{GCPConn} object needs to
+be created and initialized.  The object is initialized by passing a
+pointer to it to the \texttt{gcp\_init()} function, such as in the
+following example:
+\begin{verbatim}
+#include <gcp.h>
+
+int main()
+{
+    GCPConn conn;
+    gcp_init(&conn);
+
+    /* do stuff here */
+
+    return 0;
+}
+\end{verbatim}
+
+\subsection{Allocating Buffers}
+After the connection has been initialized, send and receive buffers
+need to be allocated.  These buffers contain the payload data for an
+outgoing or incomming message.  If a connection is going to be one way
+(i.e: send or receive only) only one buffer needs to be allocated.
+\textbf{It is up to the programmer to free these buffers when they are
+  no longer required.}
+
+A buffer is simply an array of type \texttt{uint8\_t}.  These buffers
+are then pointed to by the \texttt{recv\_buf} and \texttt{send\_buf}
+fields of the \texttt{GCPConn} object.  Also, the size of the receive
+buffer needs to be set in the \texttt{recv\_size} field.  The
+\texttt{send\_size} value is set to the size of the message to be
+sent, rather than the size of the entire buffer.  This is typically
+done just before sending.  An example follows:
+\begin{verbatim}
+#include <gcp.h>
+
+#define SIZE 1024
+
+GCPConn conn;
+uint8_t send[SIZE], recv[SIZE];
+
+int main()
+{
+    gcp_init(&conn);
+    conn.send_buf = send;
+    conn.recv_buf = recv;
+    conn.recv_size = SIZE;
+
+    /* do stuff here */
+
+    return 0;
+}
+\end{verbatim}
+
+\subsection{The \texttt{send\_lock} and \texttt{recv\_lock} Flags}
+
+\end{document}
