@@ -23,4 +23,6 @@ libgcp_la_LDFLAGS = -version-info 0:0:0
 
 include_HEADERS = crc16.h gcp.h
 
+EXTRA_DIST = Doxyfile
+
 # jl
