@@ -5,6 +5,8 @@
 \begin{document}
 
 \maketitle
+\tableofcontents
+\clearpage
 
 \section{Introduction}
 GCP (the Generic Communications Protocol) is intended to send messages
@@ -86,6 +88,135 @@ int main()
 }
 \end{verbatim}
 
-\subsection{The \texttt{send\_lock} and \texttt{recv\_lock} Flags}
+\section{Sending Messages}
+libgcp does not actually send data; it merely assembles frames so they
+can be sent over a stream of some sort.  First, the message payload
+must be placed in the send buffer.  Then, the size needs to be set.
+Finally, the \texttt{gcp\_send\_byte()} function needs to be called
+until the \texttt{GCPConn}'s \texttt{send\_lock} flag returns to a
+value of 0.  Every time this function is called, it will return the
+next octet to be sent to the outgoing stream.
+
+Once the \texttt{send\_lock} flag returns to 0, the buffer can be
+modified to contain the payload of the next message.  \textbf{Do not
+  change the send buffer's contents, or the value of
+  \texttt{send\_size}, while the \texttt{send\_lock} flag's value is 1
+  unless you are \emph{absolutely certain} you know what you're
+  doing.}
+
+The following is an example of a program that sends a series of
+messages:
+\begin{verbatim}
+#include <stdio.h>
+#include <string.h>
+#include <gcp.h>
+
+#define SIZE 1024
+
+GCPConn conn;
+uint8_t send[SIZE];
+
+void send_byte(uint8_t byte)
+{
+    /* send byte to the stream */
+}
+
+void send_message()
+{
+    do
+        gcp_send_byte(&conn);
+    while(conn.send_lock);
+}
+
+int main()
+{
+    int i = 0, byte;
+    gcp_init(&conn);
+    conn.send_buf = send;
+    for(byte = getchar(); byte != EOF; byte = getchar())
+    {
+        if(byte == '\n')
+        {
+            conn.size = (i > SIZE) ? SIZE : i;
+            i = 0;
+            send_message();
+        }
+        else
+        {
+            if(i < SIZE)
+                send[i] = byte;
+            i++;
+        }
+    }
+    return 0;
+}
+\end{verbatim}
+
+\section{Receiving Messages}
+libgcp does not actually receive data, it merely parses octets passed
+to it from a stream and extracts the message payload whenever a valid
+message is found.  In order to process a message, simply call the
+\texttt{gcp\_recv\_byte()} function with a pointer to the
+\texttt{GCPConn} object, and the next octet read from the stream,
+until the \texttt{GCPConn}'s \texttt{recv\_lock} flag changes to a
+value of 0.
+
+Once the \texttt{recv\_lock} flag changes to 0, it means that a
+message has been successfully read.  The message payload will be
+stored in the buffer pointed to by the \texttt{GCPConn}'s
+\texttt{recv\_buf} field.  This message is not terminated with an
+ASCII 0 value, however the length will be stored in the
+\texttt{GCPConn}'s \texttt{data\_size} field.  \textbf{Do not read
+  from the receive buffer while the \texttt{recv\_lock} flag's value
+  is 1 unless you are \emph{absolutely certain} you know what you're
+  doing.}
+
+It is important to note that if the message's payload is larger than
+the size of the receive buffer, it will be truncated to fit.  This can
+be checked by comparing \texttt{data\_size} to \texttt{recv\_size}.
+If the former is larger than the latter, the message has been
+truncated. For this reason, it is important to select an appropriate
+size for the receive buffer.
+
+The following is an example of a program that reads GCP messages:
+\begin{verbatim}
+#include <stdio.h>
+#include <gcp.h>
+
+#define SIZE 1024
+
+GCPConn conn;
+uint8_t recv[SIZE];
+
+int get_byte()
+{
+    /* return an octet from the stream */
+}
+
+void process_message()
+{
+    int i;
+    unsigned msg_size = (conn.data_size > conn.recv_size)
+                        ? conn.recv_size : conn.data_size;
+    for(i = 0; i < msg_size; i++)
+        putchar((char)recv[i]);
+    putchar('\n');    
+}
+
+int main()
+{
+    int byte;
+    gcp_init(&conn)
+    conn.recv_buf = recv;
+    conn.recv_size = SIZE;
+    for(byte = get_byte(); byte != EOF; byte = get_byte())
+    {
+        gcp_recv_byte(&conn, byte);
+        if(!conn.recv_lock)
+            process_message();
+    }
+    return 0;
+}
+\end{verbatim}
 
 \end{document}
