@@ -29,11 +29,13 @@ using for transport.
 
 \begin{description}
 \item[Note:]This document is intended to give an overview of how to
-  use libgcp.  For a more detailed descripiton on the various
+  use libgcp.  For a more detailed description on the various
   functions and structures, please refer to the reference manual.
 \end{description}
 
-\section{The \texttt{GCPConn} Structure}
+\section{GCP Structures and Functions}
+
+\subsection{The \texttt{GCPConn} Structure}
 Before any data can be processed, a \texttt{GCPConn} object needs to
 be created and initialized.  The object is initialized by passing a
 pointer to it to the \texttt{gcp\_init()} function, such as in the
@@ -55,7 +57,7 @@ int main()
 \subsection{Allocating Buffers}
 After the connection has been initialized, send and receive buffers
 need to be allocated.  These buffers contain the payload data for an
-outgoing or incomming message.  If a connection is going to be one way
+outgoing or incoming message.  If a connection is going to be one way
 (i.e: send or receive only) only one buffer needs to be allocated.
 \textbf{It is up to the programmer to free these buffers when they are
   no longer required.}
@@ -88,7 +90,7 @@ int main()
 }
 \end{verbatim}
 
-\section{Sending Messages}
+\subsection{Sending Messages}
 libgcp does not actually send data; it merely assembles frames so they
 can be sent over a stream of some sort.  First, the message payload
 must be placed in the send buffer.  Then, the size needs to be set.
@@ -152,7 +154,7 @@ int main()
 }
 \end{verbatim}
 
-\section{Receiving Messages}
+\subsection{Receiving Messages}
 libgcp does not actually receive data, it merely parses octets passed
 to it from a stream and extracts the message payload whenever a valid
 message is found.  In order to process a message, simply call the
@@ -218,5 +220,61 @@ int main()
     return 0;
 }
 \end{verbatim}
+
+\section{CRC-16 Structures and Functions}
+The \texttt{gcp\_send\_byte()} and \texttt{gcp\_recv\_byte()}
+functions automatically perform CRC-16 calculations, however the
+CRC-16 functions can be accessed directly as well.
+
+\subsection{The \texttt{CRC16Params} Structure}
+\label{sec:crc-params}
+Since there are several ways of implementing a CRC-16 checksum, the
+\texttt{CRC16Params} structure was created to define the manner in
+which the calculation is performed.  It contains the following fields:
+\begin{description}
+\item[\texttt{prefix}]This is an unsigned 16-bit integer
+  (\texttt{uint16\_t}) which is appended to the beginning of the data
+  before performing the checksum.  GCP uses a value of 0.  Setting it
+  to a non-zero value is useful for making sure that leading zeroes
+  affect the checksum calculation.
+\item[\texttt{poly}]The 16-bit polynomial (\texttt{uint16\_t}) to be
+  used in the CRC-16 calculation.  The polynomial used by GCP is
+  \texttt{0x8005} $(x^{16} + x^{15} + x^2 + 1)$.
+\item[\texttt{flip\_bits}]A single bit flag which, when set, causes
+  the most significant bit of each octet to be processed first.  This
+  bit is set to 0 in a GCP checksum.
+\item[\texttt{flip\_bytes}]A single bit flag which, when set, causes
+  the last octet in the buffer to be processed first.  This bit should
+  be set to 0 for a GCP checksum.
+\item[\texttt{flip\_output}]A single bit flag which, when set,
+  reverses the bits of the checksum after calculation.  This bit
+  should be set to 1 for a GCP checksum.
+\end{description}
+
+See the reference manual for more details.
+
+\subsection{The \texttt{crc16\_gen()} Function}
+\label{sec:crc-gen}
+The \texttt{crc16\_gen()} function is used to generate a CRC16
+checksum.  It takes three parameters:
+\begin{description}
+\item[\texttt{data}]A pointer to the buffer containing the data to be
+  processed.
+\item[\texttt{size}]The size of the buffer (number of octets).
+\item[\texttt{params}]A pointer to the \texttt{CRC16Params} which
+  describes how the checksum is to be performed (see section
+  \ref{sec:crc-params}).
+\end{description}
+
+This function will return the calculated CRC-16 checksum.  See the
+reference manual for more details.
+
+\subsection{The \texttt{crc16\_check()} Function}
+The \texttt{crc16\_check()} function checks the validity of a CRC-16
+checksum.  The first three parameters for this function are the same
+as for the \texttt{crc16\_gen()} function (see section
+\ref{sec:crc-gen}), the fourth parameter is the checksum being
+checked.  If the checksums match, it will return 0, otherwise it will
+return a non-zero value.  See the reference manual for more details.
 
 \end{document}
