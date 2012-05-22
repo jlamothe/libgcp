@@ -67,21 +67,16 @@ extern "C" {
     typedef struct
     {
 
-        /** \brief Receive buffer. */
+        /** \brief Pointer to the receive buffer. */
         uint8_t *recv_buf;
 
-        /** \brief Send buffer. */
+        /** \brief Pointer to the send buffer. */
         uint8_t *send_buf;
 
-        /** \brief Receive buffer size. */
+        /** \brief Size of the receive buffer. */
         uint16_t recv_size;
 
-        /**
-           \brief Send buffer size.
-
-           \note This is the size of the data in the send buffer, not
-           the size of the buffer itself.
-         */
+        /** \brief Size of the data in the send buffer. */
         uint16_t send_size;
 
         /** \brief Size of the data in the receive buffer. */
@@ -93,14 +88,13 @@ extern "C" {
         /** \brief Number of payload bytes sent. */
         uint16_t bytes_sent;
 
-        /** \brief The CRC checksum received from the stream. */
+        /** \brief The checksum received from the stream. */
         uint16_t recv_crc;
 
-        /** \brief The calculated CRC checksum of the data
-            received. */
+        /** \brief The calculated checksum of the data received. */
         uint16_t calc_crc;
 
-        /** \brief The crc checksum of the data being sent. */
+        /** \brief The checksum of the data being sent. */
         uint16_t send_crc;
 
         /** \brief The receive state. */
@@ -124,22 +118,24 @@ extern "C" {
      */
 
     /**
-       \brief Initializes a GCPConn object.
+       \brief Initializes a connection object.
 
-       \param c A pointer to the object to be initialized.
+       \param c A pointer to the connection object to be initialized.
 
-       \return 0 on success; a non-zero value on failure.
+       \return 0 on success; a non-zero value on failure (c is a NULL
+       pointer).
      */
     int gcp_init(GCPConn *c);
 
     /**
        \brief Processes a byte from the stream.
 
-       \param c A pointer to the connection.
+       \param c A pointer to the connection object.
 
-       \param b The byte from the stream to be processed.
+       \param b The byte read from the stream.
 
-       \return 0 on success; a non-zero value on failure.
+       \return 0 on success; a non-zero value on failure (c is a NULL
+       pointer).
      */
     int gcp_recv_byte(GCPConn *c, uint8_t b);
 
@@ -148,7 +144,8 @@ extern "C" {
 
        \param c A pointer to the connection.
 
-       \return The next byte (or 0 on failure).
+       \return The next byte on success; 0 on failure (c is a NULL
+       pointer).
      */
     uint8_t gcp_send_byte(GCPConn *c);
 

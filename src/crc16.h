@@ -37,7 +37,7 @@ extern "C" {
      * TYPEDEFS
      */
 
-    /** \brief CRC Parameters */
+    /** \brief CRC-16 parameters. */
     typedef struct
     {
 
@@ -47,15 +47,16 @@ extern "C" {
         /** \brief Polynomial to be used. */
         uint16_t poly;
 
-        /** \brief Process the most significant bit of each byte
-            first. */
+        /** \brief When true, indicates that the most significant bit
+            of each byte should be processed first. */
         unsigned flip_bits : 1;
 
-        /** \brief Process the last bytes in the stream first. */
+        /** \brief When true, indicates that the the bytes at the
+            highest index in the buffer should be processed first. */
         unsigned flip_bytes : 1;
 
-        /** \brief Reverse the bits in the output after
-            calculating. */
+        /** \brief When true, indicates that the bits in the output
+            should be reversed after calculating. */
         unsigned flip_output : 1;
 
     } CRC16Params;
@@ -65,32 +66,35 @@ extern "C" {
      */
 
     /**
-       \brief Generates a CRC code for a block of data.
+       \brief Generates a CRC-16 checksum for a block of data.
 
        \param data The data being used to generate the checksum.
 
        \param size The size (in bytes) of the data being CRC'd.
 
-       \param params A pointer to the CRC parameters.
+       \param params A pointer to the checksum parameters.
 
-       \return The generated CRC code or 0 on failure.
+       \return The generated checksum on success; 0 on failure (data
+       or params are NULL pointers).
      */
     uint16_t crc16_gen(const uint8_t *data,
                        uint16_t size,
                        const CRC16Params *params);
 
     /**
-       \brief Validates a CRC code for a block of data.
+       \brief Validates a CRC-16 checksum for a block of data.
 
        \param data The data being checked.
 
        \param size The size (in bytes) of the data being checked.
 
-       \param params A pointer to the CRC parameters.
+       \param params A pointer to the checksum parameters.
 
-       \param crc The CRC being checked.
+       \param crc The checksum being checked.
 
-       \return 0 if the CRC code is valid, a non-zero value otherwise.
+       \return 0 if the checksum is valid; a negative value if data or
+       params are NULL pointers; a positive value on an incorrect
+       checksum.
      */
     int crc16_check(const uint8_t *data,
                     uint16_t size,
@@ -98,7 +102,7 @@ extern "C" {
                     uint16_t crc);
 
     /**
-       \brief Process a single byte in a CRC16 checksum.
+       \brief Process a single byte in a CRC-16 checksum calculation.
 
        \param prev The previously calculated value.
 
@@ -107,7 +111,9 @@ extern "C" {
        \param msb_first Set to a non-zero value when the most
        significant bit of the data is to be processed first.
 
-       \param poly The polynomial being used for the CRC.
+       \param poly The polynomial being used for the checksum.
+
+       \return The newly calculated value.
      */
     uint16_t crc16_process_byte(uint16_t prev,
                                 uint8_t byte,
@@ -115,9 +121,10 @@ extern "C" {
                                 int msb_first);
 
     /**
-       \brief Processes the remaining 16 bits in a CRC checksum.
+       \brief Processes the remaining 16 bits of padding in a CRC-16
+       checksum.
 
-       \param prev The calculated value before the flush.
+       \param prev The value calculated before the flush.
 
        \param poly The polynomial to use.
 

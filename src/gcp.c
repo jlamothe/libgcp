@@ -55,7 +55,7 @@ http://www.gnu.org/licenses/
 /**
    \brief Reads the first byte of the preamble.
 
-   \param c A pointer to the GCPConn object.
+   \param c A pointer to the connection object.
 
    \param b The byte being read.
  */
@@ -64,7 +64,7 @@ static void recv_preamble1(GCPConn *c, uint8_t b);
 /**
    \brief Reads the second byte of the preamble.
 
-   \param c A pointer to the GCPConn object.
+   \param c A pointer to the connection object.
 
    \param b The byte being read.
  */
@@ -73,7 +73,7 @@ static void recv_preamble2(GCPConn *c, uint8_t b);
 /**
    \brief Reads the first byte of the data size.
 
-   \param c A pointer to the GCPConn object.
+   \param c A pointer to the connection object.
 
    \param b The byte being read.
  */
@@ -82,16 +82,16 @@ static void recv_size1(GCPConn *c, uint8_t b);
 /**
    \brief Reads the second byte of the data size.
 
-   \param c A pointer to the GCPConn object.
+   \param c A pointer to the connection object.
 
    \param b The byte being read.
  */
 static void recv_size2(GCPConn *c, uint8_t b);
 
 /**
-   \brief Reads the payload data.
+   \brief Reads a byte of payload data.
 
-   \param c A pointer to the GCPConn object.
+   \param c A pointer to the connection object.
 
    \param b The byte being read.
  */
@@ -100,7 +100,7 @@ static void recv_payload(GCPConn *c, uint8_t b);
 /**
    \brief Reads the first byte of the checksum.
 
-   \param c A pointer to the GCPConn object.
+   \param c A pointer to the connection object.
 
    \param b The byte being read.
  */
@@ -109,70 +109,70 @@ static void recv_crc1(GCPConn *c, uint8_t b);
 /**
    \brief Reads the second byte of the checksum.
 
-   \param c A pointer to the GCPConn object.
+   \param c A pointer to the connection object.
 
    \param b The byte being read.
  */
 static void recv_crc2(GCPConn *c, uint8_t b);
 
 /**
-   \brief Returns the first byte of the preamble to be sent.
+   \brief Calculates the first byte of the preamble to be sent.
 
-   \param c A pointer to the GCPConn object.
+   \param c A pointer to the connection object.
 
    \return The first byte of the preamble.
  */
 static uint8_t send_preamble1(GCPConn *c);
 
 /**
-   \brief Returns the second byte of the preamble to be sent.
+   \brief Calculates the second byte of the preamble to be sent.
 
-   \param c A pointer to the GCPConn object.
+   \param c A pointer to the connection object.
 
    \return The second byte of the preamble.
  */
 static uint8_t send_preamble2(GCPConn *c);
 
 /**
-   \brief Returns the first byte of the payload size to be sent.
+   \brief Calculates the first byte of the payload size to be sent.
 
-   \param c A pointer to the GCPConn object.
+   \param c A pointer to the connection object.
 
    \return The first byte of the payload size.
  */
 static uint8_t send_size1(GCPConn *c);
 
 /**
-   \brief Returns the second byte of the payload size to be sent.
+   \brief Calculates the second byte of the payload size to be sent.
 
-   \param c A pointer to the GCPConn object.
+   \param c A pointer to the connection object.
 
    \return The second byte of the payload size.
  */
 static uint8_t send_size2(GCPConn *c);
 
 /**
-   \brief Returns the next byte of the payload to be sent.
+   \brief Calculates the next byte of the payload to be sent.
 
-   \param c A pointer to the GCPConn object.
+   \param c A pointer to the connection object.
 
    \return The next byte of the payload.
  */
 static uint8_t send_payload(GCPConn *c);
 
 /**
-   \brief Returns the first byte of the checksum to be sent.
+   \brief Calculates the first byte of the checksum to be sent.
 
-   \param c A pointer to the GCPConn object.
+   \param c A pointer to the connection object.
 
    \return The first byte of the checksum.
  */
 static uint8_t send_crc1(GCPConn *c);
 
 /**
-   \brief Returns the second byte of the checksum to be sent.
+   \brief Calculates the second byte of the checksum to be sent.
 
-   \param c A pointer to the GCPConn object.
+   \param c A pointer to the connection object.
 
    \return The second byte of the checksum.
  */

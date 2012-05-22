@@ -43,7 +43,7 @@ http://www.gnu.org/licenses/
  */
 
 /**
-   \brief Reverses the bits in a uint8_t value.
+   \brief Reverses the bits in an 8-bit value.
 
    \param val The value to be flipped.
 
@@ -52,7 +52,7 @@ http://www.gnu.org/licenses/
 static uint8_t flip_8bit(uint8_t val);
 
 /**
-   \brief Reverses the bits in a uint16_t value.
+   \brief Reverses the bits in a 16-bit value.
 
    \param val The value to be flipped.
 
