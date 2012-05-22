@@ -6,7 +6,7 @@
 
 \maketitle
 
-\section{Summary}
+\section{Overview}
 GCP is intended to send messages of an arbitrary number of octets over
 a network in a simple, open manner.  While it can be used on may
 different types of networks, it was specifically designed for serial
@@ -40,7 +40,7 @@ the $Payload$ field.
     0 & 2 & $Preamble$ & \texttt{0x17}, \texttt{0x01}\\
     2 & 2 & $Size$ & The size of the $Payload$ field ($n$)\\
     4 & $n$ & $Payload$ & the payload data\\
-    $n + 4$ & 2 & $CRC$ & CRC of $Payload$ (CRC-16-IBM format)\\
+    $n + 4$ & 2 & $CRC$ & CRC of $Payload$ (CRC-16-IBM)\\
     \hline
   \end{tabular}
   \caption{GCP Packet Format\label{tab:gen-pkt-fmt}}
