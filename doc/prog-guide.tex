@@ -9,13 +9,16 @@
 \clearpage
 
 \section{Introduction}
-GCP (the Generic Communications Protocol) is intended to send messages
-of an arbitrary number of octets over a network in a simple, open
-manner.  While it can be used on may different types of networks, it
-was specifically designed for serial networks, such as RS232, RS485,
-or other networks designed to send a stream of octets.  The protocol
-provides its own error detection, making such a service unnecessary at
-a lower layer.
+libgcp is free implementation of GCP (the Generic Communications
+Protocol) It is licensed under version 3 the GNU Lesser General Public
+License or later.
+
+GCP is intended to send messages of an arbitrary number of octets over
+a network in a simple, open manner.  While it can be used on may
+different types of networks, it was specifically designed for serial
+networks, such as RS232, RS485, or other networks designed to send a
+stream of octets.  The protocol provides its own error detection,
+making such a service unnecessary at a lower layer.
 
 This protocol does not implicitly provide addressing, message
 acknowledgement, or streaming services, although, such services can be
@@ -242,7 +245,7 @@ which the calculation is performed.  It contains the following fields:
   \texttt{0x8005} $(x^{16} + x^{15} + x^2 + 1)$.
 \item[\texttt{flip\_bits}]A single bit flag which, when set, causes
   the most significant bit of each octet to be processed first.  This
-  bit is set to 0 in a GCP checksum.
+  bit should be set to 0 for a GCP checksum.
 \item[\texttt{flip\_bytes}]A single bit flag which, when set, causes
   the last octet in the buffer to be processed first.  This bit should
   be set to 0 for a GCP checksum.
@@ -251,23 +254,20 @@ which the calculation is performed.  It contains the following fields:
   should be set to 1 for a GCP checksum.
 \end{description}
 
-See the reference manual for more details.
-
 \subsection{The \texttt{crc16\_gen()} Function}
 \label{sec:crc-gen}
-The \texttt{crc16\_gen()} function is used to generate a CRC16
+The \texttt{crc16\_gen()} function is used to generate a CRC-16
 checksum.  It takes three parameters:
 \begin{description}
 \item[\texttt{data}]A pointer to the buffer containing the data to be
   processed.
 \item[\texttt{size}]The size of the buffer (number of octets).
-\item[\texttt{params}]A pointer to the \texttt{CRC16Params} which
-  describes how the checksum is to be performed (see section
+\item[\texttt{params}]A pointer to the \texttt{CRC16Params} structure
+  which describes how the checksum is to be performed (see section
   \ref{sec:crc-params}).
 \end{description}
 
-This function will return the calculated CRC-16 checksum.  See the
-reference manual for more details.
+This function will return the calculated CRC-16 checksum.
 
 \subsection{The \texttt{crc16\_check()} Function}
 The \texttt{crc16\_check()} function checks the validity of a CRC-16
@@ -275,6 +275,6 @@ checksum.  The first three parameters for this function are the same
 as for the \texttt{crc16\_gen()} function (see section
 \ref{sec:crc-gen}), the fourth parameter is the checksum being
 checked.  If the checksums match, it will return 0, otherwise it will
-return a non-zero value.  See the reference manual for more details.
+return a non-zero value.
 
 \end{document}
