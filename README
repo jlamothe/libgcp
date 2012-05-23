@@ -15,3 +15,16 @@ Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public
 License along with this program.  If not, see:
 http://www.gnu.org/licenses/
+
+* * *
+
+libgcp is a free implementation of GCP, a protocol for enabling simple
+message passing over a serial network.
+
+For the full protocol specification, see gcp-spec.pdf in the doc
+directory.
+
+For a quick guide on using libgcp, see prog-guide.pdf in the doc
+directory.
+
+For the full reference manual, see refman.pdf in the doc directory.
