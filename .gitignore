@@ -5,7 +5,6 @@
 *.in
 *.log
 *.m4
-*-pak
 *.scan
 *-sh
 *.sh
@@ -14,5 +13,6 @@ Makefile
 config.*
 configure
 depcomp
+doc-pak
 libtool
 missing
