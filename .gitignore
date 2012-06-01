@@ -13,6 +13,5 @@ Makefile
 config.*
 configure
 depcomp
-doc-pak
 libtool
 missing

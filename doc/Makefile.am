@@ -16,7 +16,7 @@
 # License along with this program.  If not, see:
 # http://www.gnu.org/licenses/
 
-dist_doc_DATA = refman.pdf gcp-spec.pdf
-EXTRA_DIST = gcp-spec.tex
+dist_doc_DATA = refman.pdf gcp-spec.pdf prog-guide.pdf
+EXTRA_DIST = gcp-spec.tex prog-guide.tex
 
 # jl
