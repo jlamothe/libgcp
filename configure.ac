@@ -20,7 +20,7 @@ dnl License along with this program.  If not, see:
 dnl http://www.gnu.org/licenses/
 
 AC_PREREQ([2.68])
-AC_INIT([libgcp], [0.1], [jonathan@jlamothe.net])
+AC_INIT([libgcp], [0.1.1], [jonathan@jlamothe.net])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign])
 LT_INIT
 AC_CONFIG_SRCDIR([src/gcp.c])
