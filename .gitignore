@@ -1,6 +1,5 @@
 *~
 *.cache
-*.deb
 *-h1
 *.in
 *.log
